@@ -4,7 +4,7 @@ program
 	.version( '0.0.1' )
 	.option( '--twitter-max-id', 'Maximum tweet id acceptable when retrieving data ' )
 	.option( '--search [max_id]', 'Search for past tweets', false )
-	.option( '--stream ', 'Stream the latest tweets', false )
+	.option( '--stream', 'Stream the latest tweets' )
 	.option( '-m, --min [tweet_field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [tweet_field]', 'Find the maximum value of a set ' )
 	.option( '-c, --config [type]', 'Config file' )
