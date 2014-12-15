@@ -2,6 +2,7 @@
 
 _ 				= require("underscore");
 MongoClient	= require('mongodb').MongoClient;
+
 args			= require("./libs/args");
 
 var inputDatabase = params.database;
@@ -16,7 +17,7 @@ MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	}
 
 	var collection = db.collection( inputDatabase.collection );
-	var fields = { _id : false,  };
+	var fields = { _id : false  };
 	var options = { limit : 1 };
 	var field = undefined;
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 _ 				= require("underscore");
 MongoClient	= require('mongodb').MongoClient;
+
 args			= require('./libs/args');
 out				= require('./libs/out');
 utils			= require('./libs/utils');
@@ -27,15 +28,15 @@ MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	} );
 });
 
-utils.readJSONFromSTDIN( function( data ) {
+utils.readJSONFromSTDIN( function( tweet ) {
 	// Saving to database
-	out.print( data );
+	out.print( tweet );
 
 	// Updating the tweet count
-	if( _.has( totalNumberOfTweets, data.keyword ) == true )
-		totalNumberOfTweets[ data.keyword ] += 1;
+	if( _.has( totalNumberOfTweets, tweet.keyword ) == true )
+		totalNumberOfTweets[ tweet.keyword ] += 1;
 	else
-		totalNumberOfTweets[ data.keyword ] = 1;
+		totalNumberOfTweets[ tweet.keyword ] = 1;
 } );
 
 // Peridiocally outputs the number of tweets saved 
