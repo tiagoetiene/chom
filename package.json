@@ -1,0 +1,15 @@
+{
+  "name": "chom",
+  "description": "A set of tool for integrating tweets data retrieval, analysis, and storage.",
+  "author": "Tiago Etiene <tiago.etiene@gmail.com>",
+  "dependencies": {
+    "underscore": "1.x.x",
+    "mongodb" : "1.x.x",
+    "commander" : "2.x.x",
+    "twit" : "1.x.x",
+    "moment" : "2.x.x",
+    "JSONStream" : "0.x.x",
+    "event-stream" : "3.x.x"
+  },
+  "engine": "node >= 0.10.x"
+}
