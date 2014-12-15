@@ -12,9 +12,14 @@ module.exports = {
 		setInterval(function( ) {
 			var total = 0;
 			var text = "";
+			var count = 0;
 			_.each( keywordDict, function( value, keyword ) { 
 				text += pad( keyword  + ": " + value, 25, " ", STR_PAD_RIGHT );
 				total += value;
+
+				count++;
+				if( count % 6 == 0 )
+					text += "\n";	
 			});
 			text += "\n"
 			text += "Total: " +  total; 
