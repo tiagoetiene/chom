@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+var utils = require('./libs/utils');
+
+utils.readJSONFromSTDIN( function( tweet ) {
+
+	tweet.newproperty = "new!!!";
+
+	// Saving to database
+	process.stdout.write( JSON.stringify( tweet ) + "\n" );
+} );
