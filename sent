@@ -7,7 +7,7 @@ utils			= require('./libs/utils');
 
 
 function isNumber( n ) { 
-      return !isNaN( parseFloat( n ) ) && isFinite( n ); 
+	return isNaN( n ) == false && isFinite( n ); 
 }
 
 
