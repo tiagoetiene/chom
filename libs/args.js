@@ -5,6 +5,8 @@ program
 	.option( '--twitter-max-id', 'Maximum tweet id acceptable when retrieving data ' )
 	.option( '--search [max_id]', 'Search for past tweets', false )
 	.option( '--stream', 'Stream the latest tweets' )
+	.option( '--field [key]', 'Field to be used during summarization' )
+	.option( '--depth', 'Max tree depth', 9 )
 	.option( '-m, --min [tweet_field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [tweet_field]', 'Find the maximum value of a set ' )
 	.option( '-c, --config [type]', 'Config file' )
@@ -29,4 +31,12 @@ if( program.search ) {
 
 if( program.stream ) {
 	params[ "stream" ] = program.stream;
+}
+
+if( program.field ) {
+	params[ "field" ] = program.field;
+}
+
+if( program.depth ) {
+	params[ "depth" ] = program.depth;
 }
