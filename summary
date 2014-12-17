@@ -41,10 +41,10 @@ utils.readJSONFromSTDIN( function( tweet ) {
 } );
 
 setInterval( function() {
-	saveSummary();
+	summarize();
 }, 1000 );
 
-function saveSummary( ) {
+function summarize( ) {
 
 	_.each( AccountsTree, function( timetree, twitter_handle ) {
 		for(var idx = 0; idx < timetree.depth(); ++idx) {
