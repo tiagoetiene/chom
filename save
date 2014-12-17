@@ -33,10 +33,12 @@ utils.readJSONFromSTDIN( function( tweet ) {
 	out.print( tweet );
 
 	// Updating the tweet count
-	if( _.has( totalNumberOfTweets, tweet.keyword ) == true )
+	if( _.has( totalNumberOfTweets, tweet.keyword ) == true ) {
 		totalNumberOfTweets[ tweet.keyword ] += 1;
-	else
+	}
+	else {
 		totalNumberOfTweets[ tweet.keyword ] = 1;
+	}
 } );
 
 // Peridiocally outputs the number of tweets saved 
