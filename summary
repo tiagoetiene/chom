@@ -1,11 +1,92 @@
 #!/usr/bin/env node
 
-var utils = require('./libs/utils');
+var utils = require( "./libs/utils" );
+var args = require( "./libs/args" );
+var TimeTree = require( "./libs/timetree" );
+
+var _ = require( "underscore" );
+
+var totalNumberOfTweets = { };
+var AccountsTree = {};
+
+var inputField = params.field;
+var inputDepth = params.depth;
+
+console.assert( inputField );
 
 utils.readJSONFromSTDIN( function( tweet ) {
+	
+	var twitter_handle = tweet.keyword;
 
-	tweet.newproperty = "new!!!";
+	if( _.has( AccountsTree, twitter_handle ) == false ) {
 
-	// Saving to database
-	process.stdout.write( JSON.stringify( tweet ) + "\n" );
+		AccountsTree[ twitter_handle ] = TimeTree.TimeTree();
+
+		AccountsTree[ twitter_handle ]
+			.depth( inputDepth )
+			.dateValuer( function( d ) { return new Date( d.created_at ); } )
+			.valuer( function( d ) { 
+				if( isNaN( d[ inputField ] ) || d[ inputField ] === null ) {
+			  		return 0;
+			  	}
+			  	return parseFloat( d[ inputField ] ); 
+			}).build();
+
+			totalNumberOfTweets[ twitter_handle ] = 0;
+	}
+
+	totalNumberOfTweets[ twitter_handle ] += 1;
+	AccountsTree[ twitter_handle ].add( tweet );
+
 } );
+
+setInterval( function() {
+	saveSummary();
+}, 1000 );
+
+function saveSummary( ) {
+
+	_.each( AccountsTree, function( timetree, twitter_handle ) {
+		for(var idx = 0; idx < timetree.depth(); ++idx) {
+
+			var data = [];
+			var interval = timetree.interval( idx );
+
+			_.each( timetree.get( idx ), function( d ) {
+
+				data.push( { 
+					d : d.date, 
+					c : d.counter, 
+					f : d.field,
+					updated : d.updated,
+				});
+
+			});
+
+			data = _.sortBy( data, 'date');
+
+			if(data.length === 0)
+				continue;
+
+			_.each( data, function( datum ) {
+
+				if( datum.updated === true ) {
+
+					timetree.updated( idx,  +datum.d, false );
+
+					var out = { 
+						th : twitter_handle, 
+						depth : idx, 
+						d : +datum.d, 
+						c : datum.c, 
+						f : datum.f 
+					}
+
+					process.stdout.write( JSON.stringify( out ) + "\n" );
+				}
+			});
+		}
+	} );
+}
+
+utils.printToFile( "/tmp/chom.summary.txt", totalNumberOfTweets );
