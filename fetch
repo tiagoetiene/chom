@@ -39,8 +39,9 @@ if( inputSearch || inputStream ) {
 //
 // Pre-processing keywords
 //
+var group = ( inputCertificate ) ? inputCertificate.length : 1;
 inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
-	return idx % inputCertificate.length == 0;
+	return idx % group == 0;
 });
 _.each( inputKeywords, function( keyword, idx ) {
 	inputKeywords[ idx ] = keyword.toLowerCase();
