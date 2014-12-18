@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+var utils = require( "./libs/utils" );
+var args = require( "./libs/args" );
+
+var inputPredicate = Function( "tweet", params.predicate );
+
+console.assert( inputPredicate );
+
+utils.readJSONFromSTDIN( function( tweet ) {
+	if( inputPredicate( tweet ) )
+		process.stdout.write( JSON.stringify( tweet ) + "\n" );
+} );
+
+//utils.printToFile( "/tmp/chom.summary.txt", totalNumberOfTweets );
