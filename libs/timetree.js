@@ -30,7 +30,7 @@ module.exports = {
 		var _valuer = Number;
 		var _intervals = [ ];
 
-		var _depth = 18;
+		var _depth = 9;
 		var _tree = [ ];
 		var _maxNodeSize = 100;
 
