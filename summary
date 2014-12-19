@@ -54,12 +54,13 @@ function summarize( ) {
 
 			_.each( timetree.get( idx ), function( d ) {
 
-				data.push( { 
-					d : d.date, 
-					c : d.counter, 
-					f : d.field,
+				var datum = { 
+					date : d.date, 
+					counter : d.counter, 
 					updated : d.updated,
-				});
+				};
+				datum[ inputField ] = d.field;
+				data.push( datum );
 
 			});
 
@@ -72,15 +73,15 @@ function summarize( ) {
 
 				if( datum.updated === true ) {
 
-					timetree.updated( idx,  +datum.d, false );
+					timetree.updated( idx,  +datum.date, false );
 
 					var out = { 
-						th : twitter_handle, 
+						twitter_handle : twitter_handle, 
 						depth : idx, 
-						d : +datum.d, 
-						c : datum.c, 
-						f : datum.f 
+						date : +datum.date, 
+						counter : datum.counter, 
 					}
+					out[ inputField ] = datum[ inputField ];
 
 					process.stdout.write( JSON.stringify( out ) + "\n" );
 				}
