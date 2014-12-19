@@ -7,6 +7,8 @@ program
 	.option( '--stream', 'Stream the latest tweets' )
 	.option( '--field [key]', 'Field to be used during summarization' )
 	.option( '--depth', 'Max tree depth', 9 )
+	.option( '--old [tweet_field]', 'Old tweet key' )
+	.option( '--new [tweet_field]', 'New tweet key' )
 	.option( '--predicate [pred]', 'Boolean function that says whether a tweet should be discarde (false) or not (true) ', "return true;" )
 	.option( '-m, --min [tweet_field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [tweet_field]', 'Find the maximum value of a set ' )
@@ -44,4 +46,12 @@ if( program.depth ) {
 
 if( program.predicate ) {
 	params[ "predicate" ] = program.predicate;
+}
+
+if( program.old ) {
+	params[ "old" ] = program.old;
+}
+
+if( program.new ) {
+	params[ "new" ] = program.new;
 }

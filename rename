@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+args		= require('./libs/args');
+utils		= require('./libs/utils');
+
+
+// Input arguments
+var inputKeyOldName = params.old;
+var inputKeyNewName = params.new;
+
+console.assert( inputKeyNewName );
+console.assert( inputKeyOldName );
+
+utils.readJSONFromSTDIN( function( tweet ) {
+
+	tweet[ inputKeyNewName ] = tweet[ inputKeyOldName ];
+	delete tweet[ inputKeyOldName ];
+
+	process.stdout.write( JSON.stringify( tweet ) + "\n" )
+	
+} );
