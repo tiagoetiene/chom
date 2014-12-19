@@ -11,13 +11,14 @@ utils			= require('./libs/utils');
 var inputDatabase = params.database;
 
 var totalNumberOfTweets = {};
-
+var database;
 MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	if(err)  {
 		console.log('* Error found while connecting to the database:', err);
 		throw err;
 	}
-	var collection = db.collection( inputDatabase.collection );
+	database = db;
+	var collection = database.collection( inputDatabase.collection );
 	out.callback( function( data ) { 
 		collection.save(data, function(err) {
 			if(err) {
@@ -29,6 +30,14 @@ MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 });
 
 utils.readJSONFromSTDIN( function( tweet ) {
+
+	if( _.isEmpty( tweet ) ) {
+		console.log( "* Closing db " );
+		database.close();
+		process.exit();
+		return;
+	}
+
 	// Saving to database
 	out.print( tweet );
 
