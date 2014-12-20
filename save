@@ -1,53 +1,129 @@
 #!/usr/bin/env node
+
 _ = require("underscore");
 MongoClient	= require('mongodb').MongoClient;
 
 args = require('./libs/args');
-out = require('./libs/out');
 utils = require('./libs/utils');
-
 
 // Input arguments
 var inputDatabase = params.database;
+var inputKeys = params.keys;
 
 var totalNumberOfTweets = {};
 var database;
+var queue = [];
+
+console.assert( inputDatabase );
+
 MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	if(err)  {
 		console.log('* Error found while connecting to the database:', err);
 		throw err;
 	}
 	database = db;
+
 	var collection = database.collection( inputDatabase.collection );
-	out.callback( function( data ) { 
-		collection.save(data, function(err) {
-			if(err) {
-				console.log('* Error found while inserting data into the database:', err);
-				throw err;
+	var bulkOperations = collection.initializeUnorderedBulkOp();
+	var constMaxBulkSize = 10000;
+	var isSaving = false;
+	var isLooping = false;
+	var dataCounter = 0;
+
+	setInterval( function() { 
+
+		while( queue.length && isSaving == false ) {
+
+			var datum = queue.shift();
+			dataCounter += 1;
+
+			if( dataCounter % constMaxBulkSize == 0 ) {
+				isSaving = true;
+				try {
+
+					var timeout = 5000000;
+					bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
+
+						if( err ) 
+							process.stderr.write( "* error: " + JSON.stringify( err ) );
+						
+						//
+						// Once we are done saving, we are build a new set of
+						// bulk operations and set isSaving to false
+						// 
+						bulkOperations = collection.initializeUnorderedBulkOp();
+						isSaving = false;
+
+					} );
+
+				} catch (err) {
+					process.stderr.write( "* exception " + JSON.stringify( err ) );
+					
+					//
+					// If a error accurs, we discard whaterver was in the queue up
+					// up until this point and restart 
+					// bulk operations and set isRunning to false
+					// 
+					isSaving = false;
+					bulkOperations = collection.initializeUnorderedBulkOp();
+				}
+				break;
 			}
-		});
-	} );
+
+			if( inputKeys ) {
+
+				//
+				// Preparing a query to search for a document
+				//
+				var q = {};
+				_.each( inputKeys, function( key ) {
+					query[ key ] = data[ key ];	
+					delete data[ key ];
+				} );
+
+				//
+				// If we have a key, then we can update values, instead 
+				// of inserting new data
+				//
+				bulkOperations.find( query ).upsert().updateOne( { $set : data } );
+
+			} else {
+
+				//
+				// Inserts a new entry in our collection because the _id key
+				// is not defined
+				//
+				bulkOperations.insert( data );
+
+			}
+		}
+
+	}, 10000 );
 });
 
-utils.readJSONFromSTDIN( function( tweet ) {
 
-	if( _.isEmpty( tweet ) ) {
-		console.log( "* Closing db " );
+utils.readJSONFromSTDIN( function( data ) {
+
+	if( _.isEmpty( data ) ) {
+		process.stderr.write( "* Closing db " );
 		database.close();
 		process.exit();
 		return;
 	}
 
 	// Saving to database
-	out.print( tweet );
+	queue.push( data );
 
-	// Updating the tweet count
-	if( _.has( totalNumberOfTweets, tweet.keyword ) == true ) {
-		totalNumberOfTweets[ tweet.keyword ] += 1;
+	// Updating the keyword counter
+	if( _.has( data, "keyword" ) ) {
+		if( _.has( totalNumberOfTweets, data.keyword ) == true ) {
+			totalNumberOfTweets[ data.keyword ] += 1;
+		}
+		else {
+			totalNumberOfTweets[ data.keyword ] = 1;
+		}
 	}
-	else {
-		totalNumberOfTweets[ tweet.keyword ] = 1;
-	}
+
 } );
 
 // Peridiocally outputs the number of tweets saved 
