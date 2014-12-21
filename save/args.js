@@ -10,6 +10,10 @@ program
 	.option( '-c, --config [type]', 'Configuration file that may include one or more command show in this menu' )
 	.parse( process.argv );
 
+if( process.argv.length <= 2 ) {
+	program.help();
+}
+
 if( program.config ) {
 	var params = require( "../" + program.config );
 	_.each( params, function( value, key ) {
