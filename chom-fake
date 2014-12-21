@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var Chance = require('chance');
-
+var args = require( "./fake/args" );
 
 function makeRandomTweet() {
 

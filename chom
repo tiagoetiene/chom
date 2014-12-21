@@ -4,6 +4,7 @@ program = require('commander');
 
 program
 	.version('0.0.1')
+	.command('fake [options]', 'create a fake tweet; useful for debugging')
 	.command('filter [options]', 'filters twitter according to an user-defined predicate')
 	.command('save [options]', 'save data to a database')
 	.command('summary [options]', 'summarize input data')
