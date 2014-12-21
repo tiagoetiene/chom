@@ -10,10 +10,6 @@ utils = require('./libs/utils');
 var inputDatabase = program.database;
 var inputKeys = program.keys;
 
-var totalNumberOfTweets = {};
-var database;
-var queue = {};
-
 if( !inputDatabase ) {
 	process.stderr.write( "\n  * Missing database information\n" );
 	program.help();
@@ -23,6 +19,10 @@ if( !inputKeys ) {
 	process.stderr.write( "\n  * Missing keys to be used\n" );
 	program.help();	
 }
+
+var totalNumberOfTweets = {};
+var database;
+var queue = {};
 
 MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
@@ -159,17 +159,12 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 	}
 
-
 	// Extracting key and value from data
 	var key = getKey( datum );
-
-	// console.log( key );
 	
-
 	if( _.has( queue, key ) ) {
 		datum.modified = queue[ key ].modified;
 	}	
-
 
 	// If new data is different from old data, 
 	// then update it
