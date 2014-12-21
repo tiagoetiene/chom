@@ -7,7 +7,7 @@ function parserList( list ) {
 program
 	.version( '0.0.1' )
 	.option( '--keys <list>', "Comma separated list of keys to be used during summarization", parserList )
-	.option( '-c, --config [type]', 'Config file' )
+	.option( '-c, --config [type]', 'Configuration file that may include one or more command show in this menu' )
 	.parse( process.argv );
 
 if( program.config ) {
