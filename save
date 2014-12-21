@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 _ = require("underscore");
-MongoClient	= require('mongodb').MongoClient;
+MongoClient = require('mongodb').MongoClient;
 
 args = require('./libs/args');
 utils = require('./libs/utils');
@@ -12,116 +12,134 @@ var inputKeys = params.keys;
 
 var totalNumberOfTweets = {};
 var database;
-var queue = [];
+var queue = {};
 
-console.assert( inputDatabase );
+if( !inputDatabase ) {
+	process.stderr.write( "\n  * Missing database information\n" );
+	program.help();
+}
 
-MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
-	if(err)  {
-		console.log('* Error found while connecting to the database:', err);
+if( !inputKeys ) {
+	process.stderr.write( "\n  * Missing keys to be used\n" );
+	program.help();	
+}
+
+MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
+
+	if( err )  {
+		console.log( '* Error found while connecting to the database:', err );
 		throw err;
 	}
 	database = db;
 
 	var collection = database.collection( inputDatabase.collection );
-	var bulkOperations = collection.initializeUnorderedBulkOp();
-	var constMaxBulkSize = 10000;
 	var isSaving = false;
-	var isLooping = false;
-	var dataCounter = 0;
 
 	setInterval( function() { 
 
-		while( queue.length && isSaving == false ) {
+		if( isSaving == true )
+			return;
 
-			var datum = queue.shift();
-			dataCounter += 1;
+		isSaving = true;
 
-			if( dataCounter % constMaxBulkSize == 0 ) {
-				isSaving = true;
-				try {
+		var bulkOperations = collection.initializeUnorderedBulkOp();
+		var operationCounter = 0;
 
-					var timeout = 5000000;
-					bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
+		_.each( queue, function( value, key ) {
 
-						if( err ) 
-							process.stderr.write( "* error: " + JSON.stringify( err ) );
-						
-						//
-						// Once we are done saving, we are build a new set of
-						// bulk operations and set isSaving to false
-						// 
-						bulkOperations = collection.initializeUnorderedBulkOp();
-						isSaving = false;
+			if( value.modified ) {
 
-					} );
+				var query = {};
 
-				} catch (err) {
-					process.stderr.write( "* exception " + JSON.stringify( err ) );
-					
-					//
-					// If a error accurs, we discard whaterver was in the queue up
-					// up until this point and restart 
-					// bulk operations and set isRunning to false
-					// 
-					isSaving = false;
-					bulkOperations = collection.initializeUnorderedBulkOp();
-				}
-				break;
-			}
+				var datum =  JSON.parse( JSON.stringify( value ) ) ;
 
-			if( inputKeys ) {
-
-				//
-				// Preparing a query to search for a document
-				//
-				var q = {};
 				_.each( inputKeys, function( key ) {
-					query[ key ] = data[ key ];	
-					delete data[ key ];
+
+					query[ key ] = value[ key ];
+
+					delete datum[ key ];
+
+				} );
+				delete datum[ "modified" ];
+
+				operationCounter++;
+				bulkOperations.find( query ).upsert().updateOne( { $set : datum } );
+			}
+		} );
+
+		if( operationCounter == 0 ) {
+
+			isSaving = false;
+
+		} else {
+			try {
+				console.log( "* Executing", operationCounter, "docs" );
+
+				var timeout = 5000000;
+
+				bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
+
+					if( err ) 
+						process.stderr.write( "* error: " + JSON.stringify( err )  + "\n" );
+					
+					isSaving = false;
+					_.each( queue, function( value, key ) { value.modified = false; } );
+
 				} );
 
-				//
-				// If we have a key, then we can update values, instead 
-				// of inserting new data
-				//
-				bulkOperations.find( query ).upsert().updateOne( { $set : data } );
+			} catch ( err ) {
 
-			} else {
-
+				process.stderr.write( "* exception " + JSON.stringify( err ) + "\n" );
+				console.log( err )
+				
 				//
-				// Inserts a new entry in our collection because the _id key
-				// is not defined
-				//
-				bulkOperations.insert( data );
-
+				// If a error accurs, we discard whaterver was in the queue up
+				// up until this point and restart 
+				// bulk operations and set isRunning to false
+				// 
+				isSaving = false;
 			}
 		}
-
 	}, 10000 );
 });
 
+function getKey( datum ) {
+	var key = "";
+	_.each( inputKeys, function( k, idx ) { 
+		key += datum[ k ]; 
+	} );
+	return key;
+}
 
-utils.readJSONFromSTDIN( function( data ) {
 
-	if( _.isEmpty( data ) ) {
+utils.readJSONFromSTDIN( function( datum ) {
+
+	if( _.isEmpty( datum ) ) {
+
 		process.stderr.write( "* Closing db " );
 		database.close();
 		process.exit();
 		return;
+
 	}
 
-	// Saving to database
-	queue.push( data );
 
-	// Updating the keyword counter
-	if( _.has( data, "keyword" ) ) {
-		if( _.has( totalNumberOfTweets, data.keyword ) == true ) {
-			totalNumberOfTweets[ data.keyword ] += 1;
-		}
-		else {
-			totalNumberOfTweets[ data.keyword ] = 1;
-		}
+	// Extracting key and value from data
+	var key = getKey( datum );
+
+	// console.log( key );
+	
+
+	if( _.has( queue, key ) ) {
+		datum.modified = queue[ key ].modified;
+	}	
+
+
+	// If new data is different from old data, 
+	// then update it
+	if( _.isEqual( queue[ key ], datum ) == false ) {
+		datum.modified = true;
+		queue[ key ] = datum;
 	}
 
 } );
