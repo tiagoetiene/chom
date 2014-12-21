@@ -13,6 +13,7 @@ var inputField = params.field;
 var inputDepth = params.depth;
 
 console.assert( inputField );
+console.assert( inputDepth );
 
 utils.readJSONFromSTDIN( function( tweet ) {
 	
