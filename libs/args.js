@@ -2,12 +2,6 @@ program = require('commander');
 
 program
 	.version( '0.0.1' )
-	.option( '--twitter-max-id', 'Maximum tweet id acceptable when retrieving data ' )
-	.option( '--search [max_id]', 'Search for past tweets', false )
-	.option( '--stream', 'Stream the latest tweets' )
-	.option( '--old [tweet_field]', 'Old tweet key' )
-	.option( '--new [tweet_field]', 'New tweet key' )
-	.option( '--predicate [pred]', 'Boolean function that says whether a tweet should be discarde (false) or not (true) ', "return true;" )
 	.option( '-m, --min [tweet_field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [tweet_field]', 'Find the maximum value of a set ' )
 	.option( '-c, --config [type]', 'Config file' )
@@ -24,20 +18,4 @@ if( program.min ) {
 
 if( program.max ) {
 	params[ "max" ] = program.max;
-}
-
-if( program.search ) {
-	params[ "search" ] = program.search;
-}
-
-if( program.stream ) {
-	params[ "stream" ] = program.stream;
-}
-
-if( program.old ) {
-	params[ "old" ] = program.old;
-}
-
-if( program.new ) {
-	params[ "new" ] = program.new;
 }
