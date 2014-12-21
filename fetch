@@ -2,6 +2,7 @@
 
 _ 				= require("underscore");
 MongoClient	= require("mongodb").MongoClient;
+ObjectID = require('mongodb').ObjectID
 Twit 			= require("twit");
 Readable 		= require('stream').Readable;
 emitter			= require('events').EventEmitter;
@@ -145,21 +146,65 @@ if( inputStream ) {
 		}
 
 		var collection = db.collection( inputDatabase.collection );
-		var stream = collection.find( {} ).stream();
 
-		stream.on( "close", function() {
-			db.close( );
-		});
-		stream.on( "error", function( err ) {
-			console.log( err );
-		});
-		stream.on( "data", function( tweet ) {
-			if( err ) {
-				console.log('* Error found while searching collection:', err);
-				throw err;
+		//
+		// latestID helps with streaming: let's get tweets 
+		// with ID greater than the latest
+		//
+		var lastestID = new ObjectID( 0 );
+
+		//
+		// Tracking whether streaming is running or not
+		//
+		var isRunning = false;
+		setInterval( function() {
+
+			//
+			// We are polling the database constantly.
+			// Thus, we will start a new stream, only if we reached 
+			// the end of the database, in other words, if there are
+			// no streams running
+			//
+			if( isRunning == false ) {
+
+				//
+				// Streaming just started, let's make it true :)
+				//
+				isRunning = true;
+
+				//
+				// The beginning of our streaming process is lastestID
+				//
+				var stream = collection.find( {  _id : { $gt :  lastestID } } ).sort( [ [ "_id", "asc" ] ] ).stream();
+
+				//
+				// When a tweet arrive, let's print it (to the console)
+				//
+				stream.on( "data", function( tweet ) {
+					if( err ) {
+						console.log('* Error found while searching collection:', err);
+						throw err;
+					}
+					lastestID = tweet._id;
+					printTweet( tweet );
+				} );
+
+				//
+				// Case we reach the end, then we are no longer runniing
+				//
+				stream.on( "close", function() {
+					isRunning = false;
+				});
+
+				//
+				// Case we reach an error, let's print it
+				//
+				stream.on( "error", function( err ) {
+					process.stderr.write( JSON.stringify( err ) );
+					isRunning = false;
+				});
 			}
-			printTweet( tweet );
-		} );	
+		}, 2000 );
 	} );
 }
 
