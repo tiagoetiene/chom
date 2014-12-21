@@ -1,4 +1,8 @@
-var program = require('commander');
+program = require('commander');
+
+function parserList( list ) {
+	return list.split(",");
+}
 
 program
 	.version( '0.0.1' )
@@ -10,6 +14,7 @@ program
 	.option( '--old [tweet_field]', 'Old tweet key' )
 	.option( '--new [tweet_field]', 'New tweet key' )
 	.option( '--predicate [pred]', 'Boolean function that says whether a tweet should be discarde (false) or not (true) ', "return true;" )
+	.option( '--keys <list>', "Comma separated list of keys to be used during summarization", parserList )
 	.option( '-m, --min [tweet_field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [tweet_field]', 'Find the maximum value of a set ' )
 	.option( '-c, --config [type]', 'Config file' )
@@ -54,4 +59,8 @@ if( program.old ) {
 
 if( program.new ) {
 	params[ "new" ] = program.new;
+}
+
+if( program.keys ) {
+	params["keys"] = program.keys;
 }
