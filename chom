@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+program = require('commander');
+
+program
+	.version('0.0.1')
+	.command('save [options]', 'install one or more packages')
+	.parse(process.argv);
+
+if( process.argv.length <= 2 ) {
+	program.help();
+}
