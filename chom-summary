@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var utils = require( "./libs/utils" );
-var args = require( "./libs/args" );
+var args = require( "./summary/args" );
 var TimeTree = require( "./libs/timetree" );
 
 var _ = require( "underscore" );
@@ -9,11 +9,18 @@ var _ = require( "underscore" );
 var totalNumberOfTweets = { };
 var AccountsTree = {};
 
-var inputField = params.field;
+var inputField = program.field;
 var inputDepth = params.depth;
 
-console.assert( inputField );
-console.assert( inputDepth );
+if( !inputField ) {
+	process.stderr.write( "\n  * Missing field information\n" );
+	program.help();
+}
+
+if( !inputDepth ) {
+	process.stderr.write( "\n  * Missing max key depth \n" );
+	program.help();	
+}
 
 utils.readJSONFromSTDIN( function( tweet ) {
 	

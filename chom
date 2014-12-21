@@ -6,6 +6,7 @@ program
 	.version('0.0.1')
 	.command('filter [options]', 'filters twitter according to an user-defined predicate')
 	.command('save [options]', 'save data to a database')
+	.command('summary [options]', 'summarize input data')
 	.parse(process.argv);
 
 if( process.argv.length <= 2 ) {
