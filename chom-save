@@ -3,12 +3,12 @@
 _ = require("underscore");
 MongoClient = require('mongodb').MongoClient;
 
-args = require('./libs/args');
+args = require('./save/args');
 utils = require('./libs/utils');
 
 // Input arguments
-var inputDatabase = params.database;
-var inputKeys = params.keys;
+var inputDatabase = program.database;
+var inputKeys = program.keys;
 
 var totalNumberOfTweets = {};
 var database;
@@ -73,8 +73,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 		} else {
 			try {
-				console.log( "* Executing", operationCounter, "docs" );
-
 				var timeout = 5000000;
 
 				bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
