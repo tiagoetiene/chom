@@ -37,14 +37,38 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 	setInterval( function() { 
 
+		//
+		// If we are in the process of saving data to the database,
+		// let's to start saving more data and overloaded the
+		// server in the process
+		//
 		if( isSaving == true )
 			return;
 
+
+		//
+		// Ok, we will start a potentially expensive operation
+		// Setting isSaving to true will lock the network communication
+		// for the current data in queue
+		//
 		isSaving = true;
 
+		//
+		// MongoDB bullk operation. We don't care about the order
+		// in which the data is save.
+		//
 		var bulkOperations = collection.initializeUnorderedBulkOp();
+
+		//
+		// Counting operation. We do not want to call .execute()
+		// if we do not have to
+		//
 		var operationCounter = 0;
 
+		//
+		// For each element in queue, let's schedule
+		// an operation
+		//
 		_.each( queue, function( value, key ) {
 
 			if( value.modified ) {
@@ -69,9 +93,19 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 		if( operationCounter == 0 ) {
 
+			// 
+			// If no operation was scheduled, let's continue
+			//
 			isSaving = false;
 
 		} else {
+			//
+			// Marking everything as modified
+			// 
+			//
+			// Let's try to save the data, if for some reason it doesn't succeed,
+			// then print the error
+			//
 			try {
 				var timeout = 5000000;
 
@@ -91,9 +125,9 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				console.log( err )
 				
 				//
-				// If a error accurs, we discard whaterver was in the queue up
-				// up until this point and restart 
-				// bulk operations and set isRunning to false
+				// If a error accurs, we discard whatever was in the queue 
+				// up until this point, restart bulk operations, and set 
+				// isRunning to false
 				// 
 				isSaving = false;
 			}
