@@ -3,11 +3,11 @@
 _ 				= require("underscore");
 MongoClient	= require('mongodb').MongoClient;
 
-args			= require("./libs/args");
+args			= require("./search/args");
 
-var inputDatabase = params.database;
-var inputMin = params.min;
-var inputMax = params.max;
+var inputDatabase = program.database;
+var inputMin = program.min;
+var inputMax = program.max;
 
 MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	
