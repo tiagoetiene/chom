@@ -33,8 +33,11 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 	database = db;
 
 	var collection = database.collection( inputDatabase.collection );
-	var isSaving = false;
 
+	//
+	//
+	//
+	var isSaving = false;
 	setInterval( function() { 
 
 		//
@@ -99,9 +102,14 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			isSaving = false;
 
 		} else {
+
+			console.log( operationCounter );
+
 			//
 			// Marking everything as modified
 			// 
+			_.each( queue, function( value, key ) { value.modified = false; } );
+
 			//
 			// Let's try to save the data, if for some reason it doesn't succeed,
 			// then print the error
@@ -110,19 +118,15 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				var timeout = 5000000;
 
 				bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
-
 					if( err ) 
-						process.stderr.write( "* error: " + JSON.stringify( err )  + "\n" );
+						console.log( "* error: ", err );
 					
 					isSaving = false;
-					_.each( queue, function( value, key ) { value.modified = false; } );
-
 				} );
 
 			} catch ( err ) {
 
-				process.stderr.write( "* exception " + JSON.stringify( err ) + "\n" );
-				console.log( err )
+				console.log( "* exception ", err );
 				
 				//
 				// If a error accurs, we discard whatever was in the queue 
