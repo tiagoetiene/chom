@@ -9,6 +9,7 @@ program
 	.command('filter [options]', 'filters twitter according to an user-defined predicate')
 	.command('rename [options]', 'renames a field from a json object' )
 	.command('save [options]', 'save data to a database')
+	.command('sentiment [options]', 'tweet sentiment analysis')
 	.command('summary [options]', 'summarize input data')
 	.parse(process.argv);
 
