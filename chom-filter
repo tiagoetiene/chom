@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
 var utils = require( "./libs/utils" );
-var args = require( "./libs/args" );
+var args = require( "./filter/args" );
 
-var inputPredicate = Function( "tweet", params.predicate );
-
-console.assert( inputPredicate );
+var inputPredicate = Function( "tweet", program.predicate );
 
 utils.readJSONFromSTDIN( function( tweet ) {
 	if( inputPredicate( tweet ) )
