@@ -28,6 +28,7 @@ MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 		field = inputMax;
 		options[ "sort" ] = [ [ field, "desc" ] ];
 	}
+	options[ "limit" ] = 1;
 
 	if( field ) {
 		fields[ field ] = true;
