@@ -12,5 +12,8 @@ if( process.argv.length <= 2 ) {
 }
 
 if( program.config ) {
-	program = require( "../" + program.config );
+	var params = require( "../" + program.config );
+	_.each( params, function( value, key ) {
+		program[ key ]	= value;
+	} );
 }
