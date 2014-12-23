@@ -10,7 +10,7 @@ var totalNumberOfTweets = { };
 var AccountsTree = {};
 
 var inputField = program.field;
-var inputDepth = params.depth;
+var inputDepth = program.depth;
 
 if( !inputField ) {
 	process.stderr.write( "\n  * Missing field information\n" );
