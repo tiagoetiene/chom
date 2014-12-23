@@ -36,9 +36,9 @@ module.exports = {
 		}
 
 		var filename = basefilename + "chom.queue." + indexBack + ".txt";
-		
+
 		//
-		// 1 Read file from disk
+		// Read file from disk
 		//
 		var data = fs.readFileSync( filename );
 		if( data == undefined )
