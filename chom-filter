@@ -2,12 +2,62 @@
 
 var utils = require( "./libs/utils" );
 var args = require( "./filter/args" );
+var tweets = require( "./filter/tweet-exist.js");
+var queue = require("./libs/queue-out-of-core");
 
 var inputPredicate = Function( "tweet", program.predicate );
+var inputCertificate = program.certificate;
+var inputDeleted = program.deleted;
+
+var filters = [];
+var data = [];
 
 utils.readJSONFromSTDIN( function( tweet ) {
-	if( inputPredicate( tweet ) )
-		process.stdout.write( JSON.stringify( tweet ) + "\n" );
+
+	if( inputPredicate( tweet ) ) {
+		if( inputDeleted ) {
+			if( data.length < 1000 )
+				queue.push( tweet )
+		} else {
+			process.stdout.write( JSON.stringify( tweet ) + "\n" );	
+		}
+	}
 } );
+
+
+if( inputDeleted ) {
+
+	var isRunnig = false;
+	setInterval( function( ) {
+
+		if( isRunnig == true ) {
+			return;
+		}
+
+		var chunk = queue.pop();
+
+		if( chunk.length == 0 ) {
+			return;
+		}
+
+		isRunnig = true;
+
+		missingTweets( chunk, function( missing_tweets ) {
+			_.each( missing_tweets, function( tweet ) {
+				// process.stdout.write( JSON.stringify( tweet ) + "\n" );	
+				console.log( "================" );
+				console.log( tweet.user.screen_name, tweet.text );
+				console.log( "================\n" );
+			} );
+
+			//
+			// Waiting 15s before next request. Twitter API limits the number
+			// of request to 60 requests / 15 min or 1 request / 15 sec
+			//
+			setTimeout( function() { isRunnig = false;	}, 15000 );
+		} );
+	}, 1000 );
+
+}
 
 //utils.printToFile( "/tmp/chom.summary.txt", totalNumberOfTweets );
