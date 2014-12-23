@@ -20,7 +20,6 @@ if( !inputKeys ) {
 	program.help();	
 }
 
-var totalNumberOfTweets = {};
 var database;
 var queue = {};
 
@@ -174,6 +173,3 @@ utils.readJSONFromSTDIN( function( datum ) {
 	}
 
 } );
-
-// Peridiocally outputs the number of tweets saved 
-utils.printToFile( "/tmp/chom.save.txt", totalNumberOfTweets );
