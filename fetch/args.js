@@ -1,3 +1,4 @@
+var fs = require('fs');
 program = require('commander');
 
 program
@@ -13,7 +14,7 @@ if( process.argv.length <= 2 ) {
 }
 
 if( program.config ) {
-	var params = require( "../" + program.config );
+	var params = JSON.parse( fs.readFileSync( program.config ) );
 	_.each( params, function( value, key ) {
 		program[ key ] = value;
 	} );
