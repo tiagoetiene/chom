@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+_ = require("underscore");
+args = require('./extract/args');
+utils = require('./libs/utils');
+
+var inputField = program.field;
+
+var list = [];
+
+utils.readJSONFromSTDIN( function( datum ) {
+
+	if( _.isEmpty( datum ) ) {
+
+		process.exit();
+		return;
+	}
+
+	console.log( datum[ inputField ] );
+	list.push( datum[ inputField ] );
+
+} );
