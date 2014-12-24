@@ -11,12 +11,10 @@ var list = [];
 utils.readJSONFromSTDIN( function( datum ) {
 
 	if( _.isEmpty( datum ) ) {
-
+		process.stdout.write( JSON.stringify( list ) );
 		process.exit();
 		return;
 	}
 
-	console.log( datum[ inputField ] );
 	list.push( datum[ inputField ] );
-
 } );
