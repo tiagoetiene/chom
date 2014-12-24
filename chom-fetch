@@ -36,30 +36,55 @@ if( inputSearch || inputStream ) {
 	}	
 }
 
-
 //
 // Pre-processing keywords
 //
-var group = ( inputCertificate ) ? inputCertificate.length : 1;
-inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
-	return idx % group == 0;
-});
-_.each( inputKeywords, function( keyword, idx ) {
-	inputKeywords[ idx ] = keyword.toLowerCase();
-});
+if( inputKeywords ) {
+	var group = ( inputCertificate ) ? inputCertificate.length : 1;
+
+	//
+	// Removing all keywords that are empty strigns
+	//
+	inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
+		return _.isEmpty( keyword ) == false;
+	} );
+
+	//
+	// Separating the input keywords in groups, according to the number
+	// of twitter certificates available
+	//
+	inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
+		return idx % group == 0;
+	});
+
+	//
+	// Lower casering and adding "@" if needed
+	//
+	_.each( inputKeywords, function( keyword, idx ) {
+		inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "@") + keyword.toLowerCase();
+	});
+}
 
 process.stdout.setMaxListeners( 0 );
 
-function printTweet( tweet ) {
-	var message = tweet.text.toLowerCase();
-	_.each( inputKeywords, function( keyword ) {
-		if( message.indexOf( keyword ) != -1 ) {
-			tweet.keyword = keyword;
-			tweet.created_at = new Date( tweet.created_at );
-			process.stdout.write( JSON.stringify( tweet ) + "\n" );
-			totalNumberOfTweets.tweets++;
-		}
-	} );
+function printTweet( datum ) {
+
+	if( inputKeywords ) {
+		var message = datum.text.toLowerCase();
+
+		_.each( inputKeywords, function( keyword ) {
+			if( message.indexOf( keyword ) != -1 ) {
+				datum.keyword = keyword;
+				datum.created_at = new Date( datum.created_at );
+				process.stdout.write( JSON.stringify( datum ) + "\n" );
+				totalNumberOfTweets.tweets++;
+			}
+		} );
+	} else {
+		process.stdout.write( JSON.stringify( datum ) + "\n" );
+		totalNumberOfTweets.tweets++;
+	}
+	
 }
 
 
