@@ -102,8 +102,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 		} else {
 
-			console.log( operationCounter );
-
 			//
 			// Marking everything as modified
 			// 
