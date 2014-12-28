@@ -9,6 +9,7 @@ program
 	.version( '0.0.1' )
 	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
+	.option( '--code [code]', 'code to be run at input json object "datum"' )
 	.parse( process.argv );
 
 if( process.argv.length <= 2 ) {

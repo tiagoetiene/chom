@@ -9,6 +9,7 @@ utils = require('./libs/utils');
 // Input arguments
 var inputDatabase = program.database;
 var inputKeys = program.keys;
+var inputCode = ( program.code ) ? Function( "datum", program.code ) : undefined;
 
 if( !inputDatabase ) {
 	process.stderr.write( "\n  * Missing database information\n" );
@@ -82,6 +83,9 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				_.each( inputKeys, function( key ) {
 
 					query[ key ] = value[ key ];
+				if( inputCode ) {
+					inputCode( datum );
+				}
 
 					delete datum[ key ];
 
