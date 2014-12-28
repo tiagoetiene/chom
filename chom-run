@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+args = require('./run/args');
+utils = require('./libs/utils');
+
+var inputCode = Function( "datum", program.code );
+
+utils.readJSONFromSTDIN( function( datum ) {
+	inputCode( datum );
+	process.stdout.write( JSON.stringify( datum ) + "\n" );
+} );

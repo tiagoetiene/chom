@@ -9,6 +9,7 @@ program
 	.command('fetch [options]', 'fetch tweets from Twitter or database')
 	.command('filter [options]', 'filters twitter according to an user-defined predicate')
 	.command('rename [options]', 'renames a field from a json object' )
+	.command('run [options]', 'runs a custom function on a json object named "datum"' )
 	.command('save [options]', 'save data to a database')
 	.command('search [options]', 'search a database with tweets')
 	.command('sentiment [options]', 'tweet sentiment analysis')
