@@ -76,20 +76,14 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 			if( value.modified ) {
 
-				var query = {};
-
+				var query = { _id : key };
 				var datum =  JSON.parse( JSON.stringify( value ) ) ;
 
-				_.each( inputKeys, function( key ) {
-
-					query[ key ] = value[ key ];
 				if( inputCode ) {
 					inputCode( datum );
 				}
 
-					delete datum[ key ];
-
-				} );
+				_.each( inputKeys, function( key ) { delete datum[ key ]; } );
 				delete datum[ "modified" ];
 
 				operationCounter++;
@@ -144,6 +138,8 @@ function getKey( datum ) {
 	var key = "";
 	_.each( inputKeys, function( k, idx ) { 
 		key += datum[ k ]; 
+		if( idx < inputKeys.length-1 )
+			key += ",";
 	} );
 	return key;
 }
