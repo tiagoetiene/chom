@@ -76,15 +76,19 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 			if( value.modified ) {
 
-				var query = { _id : key };
+				var query = { };
 				var datum =  JSON.parse( JSON.stringify( value ) ) ;
 
 				if( inputCode ) {
 					inputCode( datum );
 				}
 
-				_.each( inputKeys, function( key ) { delete datum[ key ]; } );
 				delete datum[ "modified" ];
+
+				_.each( inputKeys, function( key ) {
+					query[ key ] = datum[ key ];
+					delete datum[ key ];
+				} );
 
 				operationCounter++;
 				bulkOperations.find( query ).upsert().updateOne( { $set : datum } );
@@ -131,7 +135,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				isSaving = false;
 			}
 		}
-	}, 10000 );
+	}, 2000 );
 });
 
 function getKey( datum ) {
