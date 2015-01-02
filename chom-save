@@ -24,7 +24,7 @@ if( !inputKeys ) {
 
 var database;
 var queue = {};
-var timestamp = {};
+var timestamp = [];
 
 MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
