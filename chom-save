@@ -10,6 +10,7 @@ utils = require('./libs/utils');
 var inputDatabase = program.database;
 var inputKeys = program.keys;
 var inputCode = ( program.code ) ? Function( "datum", program.code ) : undefined;
+var inputMaxBufferSize = program.max;
 
 if( !inputDatabase ) {
 	process.stderr.write( "\n  * Missing database information\n" );
@@ -23,6 +24,7 @@ if( !inputKeys ) {
 
 var database;
 var queue = {};
+var timestamp = {};
 
 MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
@@ -160,6 +162,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 	}
 
+	// Keeping the queue to a maximum size
+	// in order to avoid explosion memory use
+	if( inputMaxBufferSize != 0 && queue.length >= inputMaxBufferSize ) {
+		delete queue[ timestamp.shift() ];
+	}
+	
+
 	// Extracting key and value from data
 	var key = getKey( datum );
 	
@@ -172,6 +181,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 	if( _.isEqual( queue[ key ], datum ) == false ) {
 		datum.modified = true;
 		queue[ key ] = datum;
+
+		if( inputMaxBufferSize != 0 ) {
+			// Saving the order in which data is inserted
+			// Old data gets removed if inputMaxBufferSize
+			// is reached
+			timestamp.push( key );	
+		}
 	}
 
 } );
