@@ -9,7 +9,7 @@ program
 	.version( '0.0.1' )
 	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
-	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 100000 )
+	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 50000 )
 	.option( '--code [code]', 'code to be run at input json object "datum"' )
 	.parse( process.argv );
 
