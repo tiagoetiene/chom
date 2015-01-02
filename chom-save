@@ -137,7 +137,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				isSaving = false;
 			}
 		}
-	}, 2000 );
+	}, 10000 );
 });
 
 function getKey( datum ) {
