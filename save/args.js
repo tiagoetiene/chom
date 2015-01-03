@@ -14,6 +14,7 @@ program
 	.option( '--code [code]', 'code to be run at input json object "datum"' )
 	.option( '--save-interval [milliseconds]', 'timeinterval used to save bulk data', 10000, parseInt )
 	.option( '--collection [name]', 'name of the collection to be saved to' )
+	.option( '--insert', 'insert date instead of trying to update it', false )
 	.parse( process.argv );
 
 if( process.argv.length <= 2 ) {

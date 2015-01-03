@@ -14,6 +14,7 @@ var inputMaxBufferSize = program.max;
 var inputCastField = _.filter( program.cast, function( value, idx ) { return idx % 2 == 0; } ) ;
 var inputCastType = _.filter( program.cast, function( value, idx ) { return idx % 2 == 1; } ) ;
 var inputSaveInterval = program["save-interval"];
+var inputInsert = program.insert;
 
 if( _.isEmpty( program.collection ) != true ) {
 	inputDatabase.collection = program.collection;
@@ -88,13 +89,22 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				var datum = _.extend( {}, value )
 				delete datum[ "modified" ];
 
-				_.each( inputKeys, function( key ) {
-					query[ key ] = datum[ key ];
-					delete datum[ key ];
-				} );
+				if( inputInsert ) {
+					console.log( datum );
+					bulkOperations.insert( datum );
+				} else {
 
+					//  If we wish to update the date, then
+					// we must build a query based on keys
+					var query = { };
+					_.each( inputKeys, function( key ) {
+						query[ key ] = datum[ key ];
+						delete datum[ key ];
+					} );
+
+					bulkOperations.find( query ).upsert().updateOne( { $set : datum } );	
+				}
 				operationCounter++;
-				bulkOperations.find( query ).upsert().updateOne( { $set : datum } );
 			}
 		} );
 
