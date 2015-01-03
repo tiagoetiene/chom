@@ -22,13 +22,13 @@ if( _.isEmpty( program.collection ) != true ) {
 }
 
 if( !inputDatabase ) {
-	process.stderr.write( "\n  * Missing database information\n" );
+	process.stderr.write( "  * Missing database information\n" );
 	program.help();
 }
 
 if( !inputKeys ) {
 	inputKeys = [];
-	process.stderr.write( "\n  * Missing keys to be used. Trying \"_id\"\n" );
+	process.stderr.write( "  * Missing keys to be used. Trying \"_id\"\n" );
 
 	inputKeys.push( "_id" );
 	inputCastField.push( "_id" );
@@ -166,16 +166,7 @@ function getKey( datum ) {
 }
 
 
-utils.readJSONFromSTDIN( function( datum ) {
-
-	if( _.isEmpty( datum ) ) {
-
-		process.stderr.write( "* Closing db " );
-		database.close();
-		process.exit();
-		return;
-
-	}
+function cast( datum ) {
 
 	_.each( inputCastField, function( field, idx ) {
 		if( _.isEqual( inputCastType[ idx ].toLowerCase(), "date" ) == true ) {
@@ -187,9 +178,39 @@ utils.readJSONFromSTDIN( function( datum ) {
 		}
 	} );
 
+}
+
+function runCode( datum ) {
+
 	if( inputCode ) {
 		inputCode( datum );
 	}
+
+}
+
+utils.readJSONFromSTDIN( function( datum ) {
+
+	if( _.isEmpty( datum ) ) {
+
+		process.stderr.write( "* Closing db " );
+		database.close();
+		process.exit();
+		return;
+
+	}
+
+	//
+	// If user wants to cast some field to
+	// some type, then this will happen here 
+	//
+	cast( datum );
+
+	//
+	//  If user wants to run custom code,
+	//  then, it will happen here
+	//
+	runCode( datum );
+
 
 	// Keeping the queue to a maximum size
 	// in order to avoid explosion memory use
