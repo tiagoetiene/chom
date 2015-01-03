@@ -84,13 +84,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 			if( value.modified ) {
 
-				var query = { };
-				var datum =  JSON.parse( JSON.stringify( value ) ) ;
-
-				if( inputCode ) {
-					inputCode( datum );
-				}
-
+				var datum = _.extend( {}, value )
 				delete datum[ "modified" ];
 
 				_.each( inputKeys, function( key ) {
