@@ -24,6 +24,12 @@ var inputCloseOnExit = program.close;
 
 var totalNumberOfTweets = { tweets : 0 };
 
+
+if( _.isEmpty( program.collection ) != true ) {
+	inputDatabase.collection = program.collection;
+}
+
+
 //
 // Establishing connection with twitter
 // 
@@ -211,7 +217,7 @@ if( inputStream ) {
 						console.log('* Error found while searching collection:', err);
 						throw err;
 					}
-					lastestID = tweet._id;
+					lastestID = new ObjectID( tweet._id );
 					printTweet( tweet );
 				} );
 
