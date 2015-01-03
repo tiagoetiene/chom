@@ -2,6 +2,7 @@
 
 _ = require("underscore");
 MongoClient = require('mongodb').MongoClient;
+ObjectID = require('mongodb').ObjectID,
 
 args = require('./save/args');
 utils = require('./libs/utils');
@@ -174,13 +175,14 @@ utils.readJSONFromSTDIN( function( datum ) {
 	}
 
 	_.each( inputCastField, function( field, idx ) {
-		if( _.isEqual( inputCastType[ idx ], "date" ) == true ) {
+		if( _.isEqual( inputCastType[ idx ].toLowerCase(), "date" ) == true ) {
 			datum[ field ] = new Date( datum[ field ] );
+		} else if( _.isEqual( inputCastType[ idx ].toLowerCase(), "objectid" ) ) {
+			datum[ field ] = new ObjectID( datum[ field ] )
 		} else {
 			console.assert( 0 && "no such type" );
 		}
 	} );
-
 
 	if( inputCode ) {
 		inputCode( datum );
