@@ -12,6 +12,10 @@ var inputKeys = program.keys;
 var inputCode = ( program.code ) ? Function( "datum", program.code ) : undefined;
 var inputMaxBufferSize = program.max;
 
+if( _.isEmpty( program.collection ) != true ) {
+	inputDatabase.collection = program.collection;
+}
+
 if( !inputDatabase ) {
 	process.stderr.write( "\n  * Missing database information\n" );
 	program.help();
