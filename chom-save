@@ -154,7 +154,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 function getKey( datum ) {
 	var key = "";
 	_.each( inputKeys, function( k, idx ) { 
-		key += datum[ k ]; 
+		key += JSON.stringify( datum[ k ] ); 
 		if( idx < inputKeys.length-1 )
 			key += ",";
 	} );
