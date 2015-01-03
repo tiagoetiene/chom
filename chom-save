@@ -91,7 +91,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				delete datum[ "modified" ];
 
 				if( inputInsert ) {
-					console.log( datum );
 					bulkOperations.insert( datum );
 				} else {
 
