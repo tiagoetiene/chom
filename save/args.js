@@ -12,6 +12,7 @@ program
 	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 50000, parseInt )
 	.option( '--cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type" ', parserList )
 	.option( '--code [code]', 'code to be run at input json object "datum"' )
+	.option( '--save-interval [milliseconds]', 'timeinterval used to save bulk data', 10000, parseInt )
 	.option( '--collection [name]', 'name of the collection to be saved to' )
 	.parse( process.argv );
 
