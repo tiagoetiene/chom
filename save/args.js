@@ -10,6 +10,7 @@ program
 	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
 	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 50000, parseInt )
+	.option( '--cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type" ', parserList )
 	.option( '--code [code]', 'code to be run at input json object "datum"' )
 	.option( '--collection [name]', 'name of the collection to be saved to' )
 	.parse( process.argv );
