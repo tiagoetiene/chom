@@ -27,8 +27,12 @@ if( !inputDatabase ) {
 }
 
 if( !inputKeys ) {
-	process.stderr.write( "\n  * Missing keys to be used\n" );
-	program.help();	
+	inputKeys = [];
+	process.stderr.write( "\n  * Missing keys to be used. Trying \"_id\"\n" );
+
+	inputKeys.push( "_id" );
+	inputCastField.push( "_id" );
+	inputCastType.push( "objectid" );
 }
 
 var database;
