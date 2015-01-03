@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+_ = require('underscore')
 args		= require('./rename/args');
 utils		= require('./libs/utils');
 
@@ -7,12 +8,15 @@ utils		= require('./libs/utils');
 var inputKeyOldName = program.old;
 var inputKeyNewName = program.new;
 
-console.assert( inputKeyNewName );
 console.assert( inputKeyOldName );
+
+var noNewName = _.isEmpty( inputKeyNewName );
 
 utils.readJSONFromSTDIN( function( tweet ) {
 
-	tweet[ inputKeyNewName ] = tweet[ inputKeyOldName ];
+	if( noNewName == false )
+		tweet[ inputKeyNewName ] = tweet[ inputKeyOldName ];
+
 	delete tweet[ inputKeyOldName ];
 
 	process.stdout.write( JSON.stringify( tweet ) + "\n" )
