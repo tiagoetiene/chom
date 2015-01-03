@@ -172,6 +172,10 @@ utils.readJSONFromSTDIN( function( datum ) {
 	} );
 
 
+	if( inputCode ) {
+		inputCode( datum );
+	}
+
 	// Keeping the queue to a maximum size
 	// in order to avoid explosion memory use
 	if( inputMaxBufferSize != 0 && _.size( queue ) >= inputMaxBufferSize ) {
