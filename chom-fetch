@@ -34,13 +34,13 @@ if( _.isEmpty( program.collection ) != true ) {
 // Establishing connection with twitter
 // 
 if( inputSearch || inputStream ) {
-	console.assert( inputCertificate != undefined );
-	var T;
-	if( inputGroup == undefined ) {
-		T = new Twit( inputCertificate[ 0 ] );
-	} else {
-		T = new Twit( inputCertificate[ inputGroup ] );
-	}	
+
+	//
+	// Sanity check. Just making sure an input credentials
+	// was provided
+	//
+	console.assert( inputCredentials != undefined );
+
 	var T = new Twit( inputCredentials[ inputGroup ] );
 }
 
@@ -48,22 +48,16 @@ if( inputSearch || inputStream ) {
 // Pre-processing keywords
 //
 if( inputKeywords ) {
-	var group = ( inputCertificate ) ? inputCertificate.length : 1;
 
 	//
 	// Removing all keywords that are empty strigns
 	//
-	inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
-		return _.isEmpty( keyword ) == false;
-	} );
+	inputKeywords = _.filter( inputKeywords, function( keyword ) { return _.isEmpty( keyword ) == false; } );
 
 	//
 	// Separating the input keywords in groups, according to the number
 	// of twitter certificates available
 	//
-	inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
-		return idx % group == 0;
-	});
 	if( inputCredentials )
 		inputKeywords = _.filter( inputKeywords, function( _ , idx ) { return idx % inputCredentials.length == inputGroup; });
 
