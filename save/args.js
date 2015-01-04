@@ -9,11 +9,11 @@ program
 	.version( '0.0.1' )
 	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
+	.option( '--collection [name]', 'name of the collection to be used' )
 	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 50000, parseInt )
 	.option( '--cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type". type is one of: date, objectid ', parserList )
 	.option( '--code [code]', 'code to be run at input json object "datum"' )
 	.option( '--save-interval [milliseconds]', 'timeinterval used to save bulk data', 10000, parseInt )
-	.option( '--collection [name]', 'name of the collection to be saved to' )
 	.option( '--insert', 'insert date instead of trying to update it', false )
 	.parse( process.argv );
 
