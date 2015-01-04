@@ -96,7 +96,10 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				delete datum[ "modified" ];
 
 				if( inputInsert ) {
-					bulkOperations.insert( datum );
+
+					if( inputSimulate == false )
+						bulkOperations.insert( datum );
+
 				} else {
 
 					//  If we wish to update the date, then
@@ -107,9 +110,15 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 						delete datum[ key ];
 					} );
 
-					bulkOperations.find( query ).upsert().updateOne( { $set : datum } );	
+					if( inputSimulate == false )
+						bulkOperations.find( query ).upsert().updateOne( { $set : datum } );	
 				}
-				operationCounter++;
+
+				if( inputSimulate == false )
+					operationCounter++;
+
+				if( inputSimulate == true )
+					console.log( query, datum );
 			}
 		} );
 
