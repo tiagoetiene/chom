@@ -29,7 +29,7 @@ if( !inputDatabase ) {
 
 if( !inputKeys ) {
 	inputKeys = [];
-	process.stderr.write( "  * Missing keys to be used. Trying \"_id\"\n" );
+	process.stderr.write( "  * Missing key(s) to be used. Trying \"_id\"\n" );
 
 	inputKeys.push( "_id" );
 	inputCastField.push( "_id" );
