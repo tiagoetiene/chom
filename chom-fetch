@@ -222,13 +222,13 @@ if( inputStream ) {
 				// Case we reach the end, then we are no longer runniing
 				//
 				stream.on( "close", function() {
-					isRunning = false;
 					if( inputCloseOnExit ) {
 						process.stdout.write( JSON.stringify( {} ) + "\n" );
 						
 						db.close();
 						process.exit();
 					}
+					isRunning = false;
 				});
 
 				//
