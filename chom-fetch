@@ -12,7 +12,7 @@ args			= require("./fetch/args");
 out				= require("./libs/out");
 utils			= require('./libs/utils');
 
-var inputCertificate = program.certificate;
+var inputCredentials = program.credentials;
 var inputKeywords = program.keywords;
 var inputGroup = program.group;
 var inputLang = ( program.lang ) ? program.lang : "en";
@@ -41,6 +41,7 @@ if( inputSearch || inputStream ) {
 	} else {
 		T = new Twit( inputCertificate[ inputGroup ] );
 	}	
+	var T = new Twit( inputCredentials[ inputGroup ] );
 }
 
 //
@@ -63,6 +64,8 @@ if( inputKeywords ) {
 	inputKeywords = _.filter( inputKeywords, function( keyword, idx ) {
 		return idx % group == 0;
 	});
+	if( inputCredentials )
+		inputKeywords = _.filter( inputKeywords, function( _ , idx ) { return idx % inputCredentials.length == inputGroup; });
 
 	//
 	// Lower casering and adding "@" if needed
