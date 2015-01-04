@@ -14,8 +14,8 @@ var inputCode = ( program.code ) ? Function( "datum", program.code ) : undefined
 var inputMaxBufferSize = program.max;
 var inputCastField = _.filter( program.cast, function( value, idx ) { return idx % 2 == 0; } ) ;
 var inputCastType = _.filter( program.cast, function( value, idx ) { return idx % 2 == 1; } ) ;
-var inputSaveInterval = program["save-interval"];
 var inputInsert = program.insert;
+var inputSaveInterval = program.saveInterval;
 
 if( _.isEmpty( program.collection ) != true ) {
 	inputDatabase.collection = program.collection;
