@@ -20,7 +20,7 @@ var inputStream = ( program.stream ) ? true : false;
 var inputSearch = ( program.search ) ? program.search : false;
 var inputUntilDate = ( typeof inputSearch != "boolean" ) ? inputSearch : "";
 var inputDatabase = program.database;
-var inputCloseOnExit = program.close;
+var inputCloseOnExit = ( program.close ) ? program.close : false;
 
 var totalNumberOfTweets = { tweets : 0 };
 
