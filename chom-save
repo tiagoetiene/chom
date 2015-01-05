@@ -39,6 +39,7 @@ if( !inputKeys ) {
 var database;
 var queue = {};
 var timestamp = [];
+var isSaving = false;
 
 MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
@@ -50,7 +51,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 	var collection = database.collection( inputDatabase.collection );
 
-	var isSaving = false;
 	setInterval( function() { 
 
 		//
