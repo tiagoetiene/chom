@@ -23,13 +23,13 @@ if( _.isEmpty( program.collection ) != true ) {
 }
 
 if( !inputDatabase ) {
-	process.stderr.write( "  * Missing database information\n" );
+	process.stderr.write( "  * Missing database information (--config config.json)\n" );
 	program.help();
 }
 
 if( !inputKeys ) {
 	inputKeys = [];
-	process.stderr.write( "  * Missing key(s) to be used. Trying \"_id\"\n" );
+	process.stderr.write( "  * Missing key(s) to be used. Defaulting to \"--keys _id --cast _id,objectid\"\n" );
 
 	inputKeys.push( "_id" );
 	inputCastField.push( "_id" );
