@@ -15,7 +15,7 @@ utils			= require('./libs/utils');
 var inputCredentials = program.credentials;
 var inputKeywords = program.keywords;
 var inputGroup = program.group;
-var inputLang = ( program.lang ) ? program.lang : "en";
+var inputLang = ( program.lang ) ? program.lang : "en"; 
 var inputStream = ( program.stream ) ? true : false;
 var inputSearch = ( program.search ) ? program.search : false;
 var inputUntilDate = ( typeof inputSearch != "boolean" ) ? inputSearch : "";
