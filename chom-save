@@ -50,9 +50,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 	var collection = database.collection( inputDatabase.collection );
 
-	//
-	//
-	//
 	var isSaving = false;
 	setInterval( function() { 
 
@@ -198,6 +195,7 @@ function runCode( datum ) {
 
 }
 
+
 utils.readJSONFromSTDIN( function( datum ) {
 
 	if( _.isEmpty( datum ) ) {
@@ -205,8 +203,8 @@ utils.readJSONFromSTDIN( function( datum ) {
 		process.stderr.write( "* Closing db " );
 		database.close();
 		process.exit();
+		
 		return;
-
 	}
 
 	//
@@ -243,6 +241,7 @@ utils.readJSONFromSTDIN( function( datum ) {
 		queue[ key ] = datum;
 
 		if( inputMaxBufferSize != 0 ) {
+
 			// Saving the order in which data is inserted
 			// Old data gets removed if inputMaxBufferSize
 			// is reached
