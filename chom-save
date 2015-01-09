@@ -195,15 +195,58 @@ function runCode( datum ) {
 
 }
 
+function exitWhenReady() {
+
+	setInterval( function() {
+		console.log( "* trying to exit... " );
+
+		//
+		// Checking whether we are currently
+		// saving any date. If we are, then
+		// we cannot exit the process just
+		// yet
+		//
+		if( isSaving === true )
+			return;
+
+		//
+		// Now we check whether there's still
+		// work to be done. In other words,
+		// we check whether there are modified
+		// data. If there are data to be saved,
+		// then we cannot exit the process just
+		// yet
+		//
+		var stillHasWorkToDo = false;
+		_.each( queue, function( value, key ) { 
+			if( value.modified ) {
+				stillHasWorkToDo = true;
+			 }
+		} );
+
+		if( stillHasWorkToDo == true )
+			return;
+
+		console.log( "* ready! " );
+
+		//
+		// Ok, everything was sabed to the database.
+		// We can now gracefully finish the current
+		// process
+		//
+		process.stderr.write( "  * Closing db." );
+		database.close();
+		process.exit();	
+
+	}, 2000);
+}
 
 utils.readJSONFromSTDIN( function( datum ) {
 
 	if( _.isEmpty( datum ) ) {
 
-		process.stderr.write( "* Closing db " );
-		database.close();
-		process.exit();
-		
+		exitWhenReady();
+
 		return;
 	}
 
