@@ -294,15 +294,23 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 	// Keeping the queue to a maximum size
 	// in order to avoid explosion memory use
-	if( inputMaxBufferSize != 0 && _.size( queue ) >= inputMaxBufferSize ) {
-		delete queue[ timestamp.shift() ];
+	if( inputMaxBufferSize != 0 ) {
+
+		while( _.size(  queue ) >= inputMaxBufferSize ) {
+			if( queue[ timestamp[ 0 ] ].modified == false )
+				delete queue[ timestamp.shift() ];
+			else 
+				break;
+		}
 	}
 	
 
 	// Extracting key and value from data
 	var key = getKey( datum );
+	var keyExists = false;
 	
 	if( _.has( queue, key ) ) {
+		keyExists = true;
 		datum.modified = queue[ key ].modified;
 	}	
 
