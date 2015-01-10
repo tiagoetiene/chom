@@ -320,7 +320,7 @@ utils.readJSONFromSTDIN( function( datum ) {
 		datum.modified = true;
 		queue[ key ] = datum;
 
-		if( inputMaxBufferSize != 0 ) {
+		if( inputMaxBufferSize != 0 && keyExists == false ) {
 
 			// Saving the order in which data is inserted
 			// Old data gets removed if inputMaxBufferSize
