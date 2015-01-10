@@ -258,7 +258,6 @@ function exitWhenReady() {
 	}, 2000);
 }
 
-var counter = 0;
 utils.readJSONFromSTDIN( function( datum ) {
 
 	if( _.isEmpty( datum ) ) {
@@ -267,11 +266,6 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 		return;
 	}
-
-	counter++;
-	if( counter % 1000 == 0 )
-		console.log( counter );
-
 
 	//
 	// If some key is missing, we add them back
