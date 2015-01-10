@@ -2,7 +2,7 @@
 
 _ = require("underscore");
 MongoClient = require('mongodb').MongoClient;
-ObjectID = require('mongodb').ObjectID,
+ObjectID = require('mongodb').ObjectID;
 
 args = require('./save/args');
 utils = require('./libs/utils');
@@ -172,6 +172,12 @@ function getKey( datum ) {
 	return key;
 }
 
+function fixKeys( datum ) {
+	_.each( inputKeys, function( key ) {
+		if( _.has( datum, key ) == false )
+			datum[ key ] = new ObjectID();
+	} );
+}
 
 function cast( datum ) {
 
@@ -249,6 +255,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 		return;
 	}
+
+
+	//
+	// If some key is missing, we add them back
+	//
+	fixKeys( datum );
+
 
 	//
 	// If user wants to cast some field to
