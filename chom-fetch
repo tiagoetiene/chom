@@ -21,6 +21,7 @@ var inputSearch = ( program.search ) ? program.search : false;
 var inputUntilDate = ( typeof inputSearch != "boolean" ) ? inputSearch : "";
 var inputDatabase = program.database;
 var inputCloseOnExit = ( program.close ) ? program.close : false;
+var inputFirstN = program.first;
 
 var totalNumberOfTweets = { tweets : 0 };
 
@@ -71,6 +72,13 @@ if( inputKeywords ) {
 
 process.stdout.setMaxListeners( 0 );
 
+function checkMaxLimitReached() {
+	if( inputFirstN && totalNumberOfTweets.tweets == inputFirstN ) {
+		process.stdout.write( JSON.stringify( {} ) + "\n" );
+		process.exit();
+	}
+}
+
 function printTweet( datum ) {
 
 	if( inputKeywords ) {
@@ -80,17 +88,21 @@ function printTweet( datum ) {
 			if( message.indexOf( keyword ) != -1 ) {
 				datum.keyword = keyword;
 				datum.created_at = new Date( datum.created_at );
-				process.stdout.write( JSON.stringify( datum ) + "\n" );
+				var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
+				console.assert( ok == true );
 				totalNumberOfTweets.tweets++;
+
+				checkMaxLimitReached();
 			}
 		} );
 	} else {
 		process.stdout.write( JSON.stringify( datum ) + "\n" );
 		totalNumberOfTweets.tweets++;
+
+		checkMaxLimitReached();
 	}
 	
 }
-
 
 if( inputStream ) {
 
