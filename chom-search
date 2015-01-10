@@ -9,6 +9,10 @@ var inputDatabase = program.database;
 var inputMin = program.min;
 var inputMax = program.max;
 
+if( _.isEmpty( program.collection ) != true ) {
+	inputDatabase.collection = program.collection;
+}
+
 MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	
 	if(err)  {

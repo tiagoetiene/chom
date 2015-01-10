@@ -3,6 +3,7 @@ program = require('commander');
 
 program
 	.version( '0.0.1' )
+	.option( '-o, --collection [name]', 'name of the collection to read from' )
 	.option( '-c, --config [type]', 'Config file' )
 	.option( '-m, --min [field]', 'Find the minimum value of a set' )
 	.option( '-M, --max [field]', 'Find the maximum value of a set ' )
