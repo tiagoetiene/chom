@@ -18,6 +18,17 @@ var inputSaveInterval = program.saveInterval;
 var inputSimulate = ( program.simulate ) ? true : false;
 var inputInsert = ( program.insert ) ? true : false;
 
+console.log();
+console.log("* Parameters settings:");
+console.log( "  * Database  :", JSON.stringify( inputDatabase ) );
+console.log( "  * Code      :", program.code );
+console.log( "  * Keys      :", inputKeys );
+console.log( "  * Max buffer:", inputMaxBufferSize );
+console.log( "  * Save inter:", inputSaveInterval);
+console.log( "  * Simulate  :", inputSimulate);
+console.log();
+
+
 if( _.isEmpty( program.collection ) != true ) {
 	inputDatabase.collection = program.collection;
 }
