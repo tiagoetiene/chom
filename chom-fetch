@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-_ 				= require("underscore");
-MongoClient	= require("mongodb").MongoClient;
-ObjectID 		= require('mongodb').ObjectID
-Twit 			= require("twit");
-Readable 		= require('stream').Readable;
-emitter			= require('events').EventEmitter;
-moment		= require('moment');
+_ = require("underscore");
+MongoClient = require("mongodb").MongoClient;
+ObjectID = require('mongodb').ObjectID
+Twit = require("twit");
+Readable = require('stream').Readable;
+emitter = require('events').EventEmitter;
+moment = require('moment');
 
-args			= require("./fetch/args");
-out				= require("./libs/out");
-utils			= require('./libs/utils');
+args = require("./fetch/args");
+out = require("./libs/out");
+utils = require('./libs/utils');
 
 var inputCredentials = program.credentials;
 var inputKeywords = program.keywords;
