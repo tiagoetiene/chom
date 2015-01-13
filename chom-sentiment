@@ -7,17 +7,9 @@ utils			= require('./libs/utils');
 
 var _ = require( "underscore" );
 
-
-function isNumber( n ) { 
-	return isNaN( n ) == false && isFinite( n ); 
-}
-
-
 function sentiment( text ) {
 	var sentiment =  Sentiment( text ).comparative;
-	if( sentiment == undefined )
-		sentiment = 0;
-	return sentiment;
+	return ( _.isNumber( sentiment ) ) ? sentiment : 0;
 }
 
 utils.readJSONFromSTDIN( function( tweet ) {
@@ -27,8 +19,7 @@ utils.readJSONFromSTDIN( function( tweet ) {
 		process.exit();	
 	}
 
-	var score = sentiment( tweet.text );
-	tweet.sentiment = ( isNumber( score ) ) ? score : 0;
+	tweet.sentiment = sentiment( tweet.text );
 
 	// Saving to database
 	process.stdout.write( JSON.stringify( tweet ) + "\n" );
