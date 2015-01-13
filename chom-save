@@ -215,8 +215,6 @@ function runCode( datum ) {
 function exitWhenReady() {
 
 	setInterval( function() {
-		console.log( "* trying to exit... " );
-
 		//
 		// Checking whether we are currently
 		// saving any date. If we are, then
@@ -243,8 +241,6 @@ function exitWhenReady() {
 
 		if( stillHasWorkToDo == true )
 			return;
-
-		console.log( "* ready! " );
 
 		//
 		// Ok, everything was sabed to the database.
