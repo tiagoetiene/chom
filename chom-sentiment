@@ -5,6 +5,8 @@ Sentiment 		= require('sentiment');
 args			= require('./sentiment/args');
 utils			= require('./libs/utils');
 
+var _ = require( "underscore" );
+
 
 function isNumber( n ) { 
 	return isNaN( n ) == false && isFinite( n ); 
@@ -20,6 +22,11 @@ function sentiment( text ) {
 
 utils.readJSONFromSTDIN( function( tweet ) {
 	
+	if( _.isEmpty( tweet ) ) {
+		process.stdout.write( JSON.stringify( {} ) + "\n" );	
+		process.exit();	
+	}
+
 	var score = sentiment( tweet.text );
 	tweet.sentiment = ( isNumber( score ) ) ? score : 0;
 
