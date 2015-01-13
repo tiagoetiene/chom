@@ -40,7 +40,8 @@ if( !inputDatabase ) {
 
 if( !inputKeys ) {
 	inputKeys = [];
-	process.stderr.write( "  * Missing key(s) to be used. Defaulting to \"--keys _id --cast _id,objectid\"\n" );
+	process.stderr.write( "  * Missing key(s) to be used.");
+	process.stderr.write( " Defaulting to \"--keys _id --cast _id,objectid\"\n" );
 
 	inputKeys.push( "_id" );
 	inputCastField.push( "_id" );
@@ -295,10 +296,17 @@ utils.readJSONFromSTDIN( function( datum ) {
 	}
 	
 
-	// Extracting key and value from data
+	//
+	// Extracting key from data
+	//
 	var key = getKey( datum );
 	var keyExists = false;
 	
+	
+	//
+	// If the key already exists, then
+	// let mark it as modified
+	//
 	if( _.has( queue, key ) ) {
 		keyExists = true;
 		datum.modified = queue[ key ].modified;
