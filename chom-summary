@@ -24,6 +24,15 @@ if( !inputDepth ) {
 
 utils.readJSONFromSTDIN( function( tweet ) {
 	
+	if( _.isEmpty( tweet ) ) {
+		setTimeout( function() {
+			process.stdout.write( JSON.stringify( {} ) + "\n" );	
+			process.exit();	
+		}, 5000);
+		return;
+	}
+
+
 	var twitter_handle = tweet.keyword;
 
 	if( _.has( AccountsTree, twitter_handle ) == false ) {
