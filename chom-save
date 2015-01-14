@@ -187,6 +187,8 @@ function getKey( datum ) {
 		if( idx < inputKeys.length-1 )
 			key += ",";
 	} );
+	console.assert( _.isUndefined( key ) == false );
+	console.assert( _.isNull( key ) == false );
 	return key;
 }
 
