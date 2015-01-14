@@ -188,10 +188,12 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 function getKey( datum ) {
 	var key = "";
 	_.each( inputKeys, function( k, idx ) { 
-		if( _.isString( datum[ k ] ))
-			key += datum[ k ]
-		else
+		if( _.isString( datum[ k ] )) {
+			key += datum[ k ];
+		}
+		else {
 			key += JSON.stringify( datum[ k ] ); 
+		}
 	} );
 	console.assert( _.isUndefined( key ) == false );
 	console.assert( _.isNull( key ) == false );
