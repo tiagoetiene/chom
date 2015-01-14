@@ -12,6 +12,13 @@ var AccountsTree = {};
 var inputField = program.field;
 var inputDepth = program.depth;
 
+process.stderr.write("\n");
+process.stderr.write( "* chom-summary" + "\n");
+process.stderr.write( "  * parameters settings:" + "\n");
+process.stderr.write( "    * field: " + JSON.stringify( inputField ) + "\n" );
+process.stderr.write( "    * depth: " + inputDepth + "\n" );
+process.stderr.write("\n");
+
 if( !inputField ) {
 	process.stderr.write( "\n  * Missing field information\n" );
 	program.help();

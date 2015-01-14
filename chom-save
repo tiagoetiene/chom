@@ -16,15 +16,16 @@ var inputSaveInterval = program.saveInterval;
 var inputSimulate = ( program.simulate ) ? true : false;
 var inputInsert = ( program.insert ) ? true : false;
 
-console.log();
-console.log("* Parameters settings:");
-console.log( "  * Database  :", JSON.stringify( inputDatabase ) );
-console.log( "  * Code      :", program.code );
-console.log( "  * Keys      :", inputKeys );
-console.log( "  * Max buffer:", inputMaxBufferSize );
-console.log( "  * Save inter:", inputSaveInterval);
-console.log( "  * Simulate  :", inputSimulate);
-console.log();
+process.stderr.write("\n");
+process.stderr.write( "* chom-save" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * database  : " + JSON.stringify( inputDatabase ) + "\n" );
+process.stderr.write( "    * code      : " + program.code + "\n" );
+process.stderr.write( "    * keys      : " + inputKeys + "\n" );
+process.stderr.write( "    * max buffer: " + inputMaxBufferSize + "\n" );
+process.stderr.write( "    * save inter: " + inputSaveInterval + "\n" );
+process.stderr.write( "    * simulate  : " + inputSimulate + "\n" );
+process.stderr.write("\n");
 
 
 if( _.isEmpty( program.collection ) != true ) {

@@ -7,6 +7,10 @@ utils			= require('./libs/utils');
 
 var _ = require( "underscore" );
 
+process.stderr.write("\n");
+process.stderr.write( "* chom-sentiment" + "\n");
+process.stderr.write("\n");
+
 function sentiment( text ) {
 	var sentiment =  Sentiment( text ).comparative;
 	return ( _.isNumber( sentiment ) ) ? sentiment : 0;
