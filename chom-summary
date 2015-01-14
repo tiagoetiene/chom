@@ -33,7 +33,7 @@ utils.readJSONFromSTDIN( function( tweet ) {
 	
 	if( _.isEmpty( tweet ) ) {
 		setTimeout( function() {
-			process.stdout.write( JSON.stringify( {} ) + "\n" );	
+			process.stdout.write( JSON.stringify( {} ) + "\n" );
 			process.stderr.write("* chom-summary close\n");
 			process.exit();	
 		}, 5000);

@@ -15,6 +15,12 @@ var inputMaxBufferSize = program.max;
 var inputSaveInterval = program.saveInterval;
 var inputSimulate = ( program.simulate ) ? true : false;
 var inputInsert = ( program.insert ) ? true : false;
+var inputCastField = _.filter( program.cast, function( value, idx ) { 
+	return idx % 2 == 0; 
+} ) ;
+var inputCastType = _.filter( program.cast, function( value, idx ) { 
+	return idx % 2 == 1; 
+} ) ;
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-save" + "\n");
@@ -33,7 +39,8 @@ if( _.isEmpty( program.collection ) != true ) {
 }
 
 if( !inputDatabase ) {
-	process.stderr.write( "  * Missing database information (--config config.json)\n" );
+	process.stderr.write( "  * Missing database information" );
+	process.stderr.write( " (--config config.json)\n" );
 	program.help();
 }
 
@@ -215,6 +222,7 @@ function runCode( datum ) {
 function exitWhenReady() {
 
 	setInterval( function() {
+
 		//
 		// Checking whether we are currently
 		// saving any date. If we are, then
@@ -281,9 +289,10 @@ utils.readJSONFromSTDIN( function( datum ) {
 	//
 	runCode( datum );
 
-
+	//
 	// Keeping the queue to a maximum size
 	// in order to avoid explosion memory use
+	//
 	if( inputMaxBufferSize != 0 ) {
 
 		while( _.size(  queue ) >= inputMaxBufferSize ) {
@@ -311,17 +320,21 @@ utils.readJSONFromSTDIN( function( datum ) {
 		datum.modified = queue[ key ].modified;
 	}	
 
+	//
 	// If new data is different from old data, 
 	// then update it
+	//
 	if( _.isEqual( queue[ key ], datum ) == false ) {
 		datum.modified = true;
 		queue[ key ] = datum;
 
 		if( inputMaxBufferSize != 0 && keyExists == false ) {
 
+			//
 			// Saving the order in which data is inserted
 			// Old data gets removed if inputMaxBufferSize
 			// is reached
+			//
 			timestamp.push( key );	
 		}
 	}
