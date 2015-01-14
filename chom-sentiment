@@ -16,6 +16,7 @@ utils.readJSONFromSTDIN( function( tweet ) {
 	
 	if( _.isEmpty( tweet ) ) {
 		process.stdout.write( JSON.stringify( {} ) + "\n" );	
+		process.stderr.write("* chom-sentiment close\n");
 		process.exit();	
 	}
 

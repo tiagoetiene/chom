@@ -246,7 +246,7 @@ function exitWhenReady() {
 		// We can now gracefully finish the current
 		// process
 		//
-		process.stderr.write( "  * Closing db.\n" );
+		process.stderr.write("* chom-save close\n");
 		database.close();
 		process.exit();	
 

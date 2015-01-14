@@ -247,7 +247,8 @@ if( inputStream ) {
 				stream.on( "close", function() {
 					if( inputCloseOnExit ) {
 						process.stdout.write( JSON.stringify( {} ) + "\n" );
-						
+						process.stderr.write("* chom-fetch close\n");
+
 						db.close();
 						process.exit();
 					}
