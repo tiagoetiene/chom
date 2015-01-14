@@ -158,16 +158,17 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			try {
 				var timeout = 5000000;
 
-				bulkOperations.execute( { w: 1, wtimeout : timeout }, function( err, ret ) {
-					if( err ) 
-						console.log( "* error: ", err );
-					
-					isSaving = false;
-				} );
+				bulkOperations.execute( { w: 1, wtimeout : timeout }, 
+					function( err, ret ) {
+						if( err ) 
+							process.stderr.write( "* error: " + JSON.stringify( err ) );
+						
+						isSaving = false;
+					} );
 
-			} catch ( err ) {
+			} catch ( e ) {
 
-				console.log( "* exception ", err );
+				process.stderr.write( "* exception: " + JSON.stringify( e ) );
 				
 				//
 				// If a error accurs, we discard whatever was in the queue 
