@@ -23,6 +23,16 @@ var inputDatabase = program.database;
 var inputCloseOnExit = ( program.close ) ? program.close : false;
 var inputFirstN = ( program.first ) ? program.first : false;
 
+process.stderr.write("\n");
+process.stderr.write( "* chom-fetch" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * credentials: " + JSON.stringify( inputCredentials ) + "\n" );
+process.stderr.write( "    * stream     : " + inputStream + "\n" );
+process.stderr.write( "    * search     : " + inputSearch + "\n" );
+process.stderr.write( "    * database   : " + JSON.stringify( inputDatabase ) + "\n" );
+process.stderr.write( "    * first      : " + inputFirstN + "\n" );
+process.stderr.write( "    * close      : " + inputCloseOnExit + "\n" );
+process.stderr.write("\n");
 
 var totalNumberOfTweets = { tweets : 0 };
 
