@@ -27,7 +27,7 @@ process.stderr.write( "* chom-save" + "\n");
 process.stderr.write( "  * parameters settings:\n");
 process.stderr.write( "    * database  : " + JSON.stringify( inputDatabase ) + "\n" );
 process.stderr.write( "    * code      : " + program.code + "\n" );
-process.stderr.write( "    * keys      : " + inputKeys + "\n" );
+process.stderr.write( "    * keys      : " + JSON.stringify( inputKeys ) + "\n" );
 process.stderr.write( "    * max buffer: " + inputMaxBufferSize + "\n" );
 process.stderr.write( "    * save inter: " + inputSaveInterval + "\n" );
 process.stderr.write( "    * simulate  : " + inputSimulate + "\n" );
