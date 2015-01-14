@@ -129,8 +129,8 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 						bulkOperations.find( query ).upsert().updateOne( { $set : datum } );	
 				}
 
-				if( inputSimulate == false )
-					operationCounter++;
+
+				operationCounter++;
 
 				if( inputSimulate == true )
 					console.log( query, datum );
@@ -151,30 +151,34 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			// 
 			_.each( queue, function( value, key ) { value.modified = false; } );
 
-			//
-			// Let's try to save the data, if for some reason it doesn't succeed,
-			// then print the error
-			//
-			try {
-				var timeout = 5000000;
-
-				bulkOperations.execute( { w: 1, wtimeout : timeout }, 
-					function( err, ret ) {
-						if( err ) 
-							process.stderr.write( "* error: " + JSON.stringify( err ) );
-						
-						isSaving = false;
-					} );
-
-			} catch ( e ) {
-
-				process.stderr.write( "* exception: " + JSON.stringify( e ) );
-				
+			if( inputSimulate == false ) {
 				//
-				// If a error accurs, we discard whatever was in the queue 
-				// up until this point, restart bulk operations, and set 
-				// isRunning to false
-				// 
+				// Let's try to save the data, if for some reason it doesn't succeed,
+				// then print the error
+				//
+				try {
+					var timeout = 5000000;
+
+					bulkOperations.execute( { w: 1, wtimeout : timeout }, 
+						function( err, ret ) {
+							if( err ) 
+								process.stderr.write( "* error: " + JSON.stringify( err ) );
+							
+							isSaving = false;
+						} );
+
+				} catch ( e ) {
+
+					process.stderr.write( "* exception: " + JSON.stringify( e ) );
+					
+					//
+					// If a error accurs, we discard whatever was in the queue 
+					// up until this point, restart bulk operations, and set 
+					// isRunning to false
+					// 
+					isSaving = false;
+				}
+			} else {
 				isSaving = false;
 			}
 		}
