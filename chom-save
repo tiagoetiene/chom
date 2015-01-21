@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+HashMap = require('hashmap').HashMap;
 _ = require("underscore");
 MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID;
@@ -55,8 +56,7 @@ if( !inputKeys ) {
 }
 
 var database;
-var queue = {};
-var timestamp = [];
+var queue = new HashMap();
 var isSaving = false;
 
 MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
@@ -71,6 +71,8 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 	setInterval( function() { 
 
+		// process.stderr.write("\t----\n");
+
 		//
 		// If we are in the process of saving data to the database,
 		// let's to start saving more data and overloaded the
@@ -79,6 +81,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 		if( isSaving == true )
 			return;
 
+		// process.stderr.write("\tA\n");
 
 		//
 		// Ok, we will start a potentially expensive operation
@@ -99,13 +102,17 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 		//
 		var operationCounter = 0;
 
+		// process.stderr.write("\tB\n");
+
 		//
 		// For each element in queue, let's schedule
 		// an operation
 		//
-		_.each( queue, function( value, key ) {
+		queue.forEach( function( value, key ) {
 
 			if( value.modified ) {
+
+				value.modified = false;
 
 				var datum = _.extend( {}, value )
 				delete datum[ "modified" ];
@@ -129,6 +136,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 						bulkOperations.find( query ).upsert().updateOne( { $set : datum } );	
 				}
 
+				queue.remove( key );
 
 				operationCounter++;
 
@@ -137,6 +145,9 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			}
 		} );
 
+		// process.stderr.write("\tC\n");
+
+		// process.stderr.write("* Operations: " + operationCounter + "\n" );
 		if( operationCounter == 0 ) {
 
 			// 
@@ -146,10 +157,7 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 		} else {
 
-			//
-			// Marking everything as modified
-			// 
-			_.each( queue, function( value, key ) { value.modified = false; } );
+			// process.stderr.write("\t* Saving: " + JSON.stringify( new Date() ) + "\n" );
 
 			if( inputSimulate == false ) {
 				//
@@ -161,8 +169,9 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 					bulkOperations.execute( { w: 1, wtimeout : timeout }, 
 						function( err, ret ) {
-							if( err ) 
+							if( err ) {
 								process.stderr.write( "* error: " + JSON.stringify( err ) );
+							}
 							
 							isSaving = false;
 						} );
@@ -182,18 +191,14 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				isSaving = false;
 			}
 		}
+		// process.stderr.write("\tD\n");
 	}, inputSaveInterval );
 });
 
 function getKey( datum ) {
-	var key = "";
+	var key = {};
 	_.each( inputKeys, function( k, idx ) { 
-		if( _.isString( datum[ k ] )) {
-			key += datum[ k ];
-		}
-		else {
-			key += JSON.stringify( datum[ k ] ); 
-		}
+			key[ k ] += datum[ k ];
 	} );
 	console.assert( _.isUndefined( key ) == false );
 	console.assert( _.isNull( key ) == false );
@@ -202,8 +207,10 @@ function getKey( datum ) {
 
 function fixKeys( datum ) {
 	_.each( inputKeys, function( key ) {
-		if( _.has( datum, key ) == false )
+		if( _.has( datum, key ) == false ) {
+			process.stderr.write("Cannot found keys for " + JSON.stringify( datum ) );
 			datum[ key ] = new ObjectID();
+		}
 	} );
 }
 
@@ -251,7 +258,7 @@ function exitWhenReady() {
 		// yet
 		//
 		var stillHasWorkToDo = false;
-		_.each( queue, function( value, key ) { 
+		queue.forEach( function( value, key ) { 
 			if( value.modified ) {
 				stillHasWorkToDo = true;
 			 }
@@ -274,6 +281,8 @@ function exitWhenReady() {
 
 utils.readJSONFromSTDIN( function( datum ) {
 
+	// process.stderr.write("I");
+
 	if( _.isEmpty( datum ) ) {
 
 		exitWhenReady();
@@ -281,10 +290,14 @@ utils.readJSONFromSTDIN( function( datum ) {
 		return;
 	}
 
+	// process.stderr.write("II\n");
+
 	//
 	// If some key is missing, we add them back
 	//
 	fixKeys( datum );
+
+	// process.stderr.write("III\n");
 
 
 	//
@@ -293,25 +306,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 	//
 	cast( datum );
 
+	// process.stderr.write("IV\n");
+
 	//
 	//  If user wants to run custom code,
 	//  then, it will happen here
 	//
 	runCode( datum );
-
-	//
-	// Keeping the queue to a maximum size
-	// in order to avoid explosion memory use
-	//
-	if( inputMaxBufferSize != 0 ) {
-
-		while( _.size(  queue ) >= inputMaxBufferSize ) {
-			if( queue[ timestamp[ 0 ] ].modified == false )
-				delete queue[ timestamp.shift() ];
-			else 
-				break;
-		}
-	}
 	
 
 	//
@@ -321,32 +322,31 @@ utils.readJSONFromSTDIN( function( datum ) {
 	var keyExists = false;
 	
 	
+// process.stderr.write("VIII\n");
+
 	//
 	// If the key already exists, then
 	// let mark it as modified
 	//
-	if( _.has( queue, key ) ) {
+	if( queue.has( key ) ) {
 		keyExists = true;
-		datum.modified = queue[ key ].modified;
-	}	
+		delete queue.get( key )["modified"]
+	}	else {
+		queue.set( key, {} );
+	}
+
+	// process.stderr.write("IX\n");
 
 	//
 	// If new data is different from old data, 
 	// then update it
 	//
-	if( _.isEqual( queue[ key ], datum ) == false ) {
+
+	if( _.isEqual( queue.get( key ), datum ) == false ) {
 		datum.modified = true;
-		queue[ key ] = datum;
-
-		if( inputMaxBufferSize != 0 && keyExists == false ) {
-
-			//
-			// Saving the order in which data is inserted
-			// Old data gets removed if inputMaxBufferSize
-			// is reached
-			//
-			timestamp.push( key );	
-		}
+		queue.set( key , datum );
 	}
+
+	// process.stderr.write("X\n");
 
 } );
