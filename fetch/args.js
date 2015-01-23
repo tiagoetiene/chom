@@ -4,6 +4,7 @@ program = require('commander');
 program
 	.version( '0.0.1' )
 	.option( '-o, --collection [name]', 'name of the collection to read from' )
+	.option( '-r, --credentials [json]', 'json file containing the twitter credentials' )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
 	.option( '-f, --first [number]', 'retrieve the first [number] items', parseInt )
 	.option( '-g, --group [group]', 'group to be used', 0, parseInt )
@@ -21,4 +22,11 @@ if( program.config ) {
 	_.each( params, function( value, key ) {
 		program[ key ] = value;
 	} );
+}
+
+if( program.credentials ) {
+	var params = JSON.parse( fs.readFileSync( program.credentials ) );
+	_.each( params, function( value, key ) {
+		program[ key ] = value;
+	} );	
 }
