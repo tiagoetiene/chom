@@ -71,8 +71,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 
 	setInterval( function() { 
 
-		// process.stderr.write("\t----\n");
-
 		//
 		// If we are in the process of saving data to the database,
 		// let's to start saving more data and overloaded the
@@ -80,8 +78,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 		//
 		if( isSaving == true )
 			return;
-
-		// process.stderr.write("\tA\n");
 
 		//
 		// Ok, we will start a potentially expensive operation
@@ -101,8 +97,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 		// if we do not have to
 		//
 		var operationCounter = 0;
-
-		// process.stderr.write("\tB\n");
 
 		//
 		// For each element in queue, let's schedule
@@ -145,9 +139,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			}
 		} );
 
-		// process.stderr.write("\tC\n");
-
-		// process.stderr.write("* Operations: " + operationCounter + "\n" );
 		if( operationCounter == 0 ) {
 
 			// 
@@ -156,8 +147,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 			isSaving = false;
 
 		} else {
-
-			// process.stderr.write("\t* Saving: " + JSON.stringify( new Date() ) + "\n" );
 
 			if( inputSimulate == false ) {
 				//
@@ -191,7 +180,6 @@ MongoClient.connect( inputDatabase.mongo_url, function( err, db ) {
 				isSaving = false;
 			}
 		}
-		// process.stderr.write("\tD\n");
 	}, inputSaveInterval );
 });
 
@@ -281,8 +269,6 @@ function exitWhenReady() {
 
 utils.readJSONFromSTDIN( function( datum ) {
 
-	// process.stderr.write("I");
-
 	if( _.isEmpty( datum ) ) {
 
 		exitWhenReady();
@@ -290,23 +276,16 @@ utils.readJSONFromSTDIN( function( datum ) {
 		return;
 	}
 
-	// process.stderr.write("II\n");
-
 	//
 	// If some key is missing, we add them back
 	//
 	fixKeys( datum );
-
-	// process.stderr.write("III\n");
-
 
 	//
 	// If user wants to cast some field to
 	// some type, then this will happen here 
 	//
 	cast( datum );
-
-	// process.stderr.write("IV\n");
 
 	//
 	//  If user wants to run custom code,
@@ -320,9 +299,6 @@ utils.readJSONFromSTDIN( function( datum ) {
 	//
 	var key = getKey( datum );
 	var keyExists = false;
-	
-	
-// process.stderr.write("VIII\n");
 
 	//
 	// If the key already exists, then
@@ -335,18 +311,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 		queue.set( key, {} );
 	}
 
-	// process.stderr.write("IX\n");
-
 	//
 	// If new data is different from old data, 
 	// then update it
 	//
-
 	if( _.isEqual( queue.get( key ), datum ) == false ) {
 		datum.modified = true;
 		queue.set( key , datum );
 	}
-
-	// process.stderr.write("X\n");
 
 } );
