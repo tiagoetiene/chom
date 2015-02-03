@@ -6,6 +6,9 @@ var _ = require("underscore");
 process.stdin.setEncoding('utf8');
 
 module.exports = {
+	parserList : function( list ) {
+		return list.split(",");
+	},
 	toJSON : function( string ) {
 		return eval("(function(){return " + string + ";})()");
 	},

@@ -1,55 +1,115 @@
-_ 				= require("underscore");
-MongoClient	= require('mongodb').MongoClient;
-Stream 		 	= require('./stream');
-Args			= require('./args.js');
-Utils			= require('./utils.js');
+// _ 				= require("underscore");
+// MongoClient	= require('mongodb').MongoClient;
+// Stream 		 	= require('./stream');
+// Args			= require('./args.js');
+// Utils			= require('./utils.js');
 
-var tweetCallback = {};
+// var tweetCallback = {};
 
-printf = function(d) {
-	process.stdout.write(d);
-};
+// printf = function(d) {
+// 	process.stdout.write(d);
+// };
 
-function loadTweetsStream(lang) {
-	printf('======= Loading Tweet Stream in ' + lang);
+// function loadTweetsStream(lang) {
+// 	printf('======= Loading Tweet Stream in ' + lang);
 
-	var data = Stream.getStreams( Utils.lang( lang ) );
-	var keywords = [];
-	var stream;
+// 	var data = Stream.getStreams( Utils.lang( lang ) );
+// 	var keywords = [];
+// 	var stream;
 
-	_.each(data, function( _ ) { 
-		keywords = keywords.concat( _.keywords );
-	});
-	_.each(data, function(_, idx) { 
-		for(var i = 0; i < data[idx].keywords.length; ++i)
-			data[idx].keywords[i] = data[idx].keywords[i].toUpperCase();
-	});
+// 	_.each(data, function( _ ) { 
+// 		keywords = keywords.concat( _.keywords );
+// 	});
+// 	_.each(data, function(_, idx) { 
+// 		for(var i = 0; i < data[idx].keywords.length; ++i)
+// 			data[idx].keywords[i] = data[idx].keywords[i].toUpperCase();
+// 	});
 
-	stream = T[ lang ].stream('statuses/filter', { track: keywords, language: Utils.lang( lang ) });
-	stream.on('tweet', function ( _tweet ) {
-		var message = _tweet.text.toUpperCase();
-		_.each(data, function( datum , idx) {
-			if(Utils.contains(message, datum.keywords)) {
-				if( _.has(tweetCallback, datum.name ) )
-				{
-					_tweet.name = datum.name;
-					tweetCallback[datum.name].call(this, _tweet);
+// 	stream = T[ lang ].stream('statuses/filter', { track: keywords, language: Utils.lang( lang ) });
+// 	stream.on('tweet', function ( _tweet ) {
+// 		var message = _tweet.text.toUpperCase();
+// 		_.each(data, function( datum , idx) {
+// 			if(Utils.contains(message, datum.keywords)) {
+// 				if( _.has(tweetCallback, datum.name ) )
+// 				{
+// 					_tweet.name = datum.name;
+// 					tweetCallback[datum.name].call(this, _tweet);
+// 				}
+// 			}
+// 		});
+// 	});
+
+// 	printf( ' ... done!\n' );
+// }
+
+// module.exports = {
+// 	loadStream : function( callback ) {
+// 		_.each( Args.databases().lang, function( datum, lang ) {
+// 			loadTweetsStream( lang );
+// 		});
+// 		callback.call( this );
+// 	},
+// 	setTweetCallback : function( name, callback ) {
+// 		tweetCallback[ name ] = callback;
+// 	}
+// }
+
+
+var Twit = require("twit");
+var _ = require( "underscore" );
+var inputCertificate = program.certificate;
+
+var T;
+
+usersLookup = function( T, requestType, users, callback ) {
+
+	//
+	// Retrieving the ids from all input tweets
+	//
+	var userListBulks = [];
+	var usersList = "";
+	var counter = 0;
+	_.each( users, function( user ) {
+		if( _.isEmpty( user ) == false ) {
+	 		usersList += user + "," 
+	 		counter++;
+		}
+	 	if( counter == 100 ) {
+	 		userListBulks.push( usersList.substring( 0 ) );
+	 		usersList = "";
+	 		counter = 0;
+	 	}
+	} );
+	userListBulks.push( usersList );
+	
+
+	var bulk = 0;
+	var working = false;
+	var handle = setInterval( function() {
+
+		if( bulk >= userListBulks.length ) {
+			clearInterval( handle );
+		}
+
+		if( !working ) {
+
+			working = true;
+
+			var options = {};
+			options[ requestType ] = userListBulks[ bulk ];
+
+			process.stderr.write( JSON.stringify( userListBulks[ bulk ] ) + "\n");
+			T.post( "users/lookup", options, function(err, data, response) {
+				if( err ) {
+					throw err;
 				}
-			}
-		});
-	});
 
-	printf( ' ... done!\n' );
-}
+				bulk++;
+				working = false;
+				callback.call( this, data );
 
-module.exports = {
-	loadStream : function( callback ) {
-		_.each( Args.databases().lang, function( datum, lang ) {
-			loadTweetsStream( lang );
-		});
-		callback.call( this );
-	},
-	setTweetCallback : function( name, callback ) {
-		tweetCallback[ name ] = callback;
-	}
+			} );	
+		}		
+	}, 15000 );
+	
 }

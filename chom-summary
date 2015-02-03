@@ -6,11 +6,12 @@ var TimeTree = require( "./libs/timetree" );
 
 var _ = require( "underscore" );
 
-var totalNumberOfTweets = { };
+var totalNumberOfTweets = { mostRecent : 0 };
 var AccountsTree = {};
 
 var inputField = program.field;
 var inputDepth = program.depth;
+
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-summary" + "\n");
@@ -49,7 +50,10 @@ utils.readJSONFromSTDIN( function( tweet ) {
 
 		AccountsTree[ twitter_handle ]
 			.depth( inputDepth )
-			.dateValuer( function( d ) { return new Date( d.created_at ); } )
+			.dateValuer( function( d ) { 
+				totalNumberOfTweets.mostRecent = Math.max( totalNumberOfTweets.mostRecent, d.created_at );
+				return new Date( d.created_at ); 
+			} )
 			.valuer( function( d ) { 
 				if( isNaN( d[ inputField ] ) || d[ inputField ] === null ) {
 			  		return 0;
@@ -67,7 +71,7 @@ utils.readJSONFromSTDIN( function( tweet ) {
 
 setInterval( function() {
 	summarize();
-}, 1000 );
+}, 10000 );
 
 function summarize( ) {
 

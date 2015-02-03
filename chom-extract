@@ -4,17 +4,26 @@ _ = require("underscore");
 args = require('./extract/args');
 utils = require('./libs/utils');
 
-var inputField = program.field;
+var inputFields = program.fields;
+var inputDelimiter = ( _.isUndefined( program.delimiter ) == false ) ? program.delimiter : "\n";
 
-var list = [];
+process.stderr.write("\n");
+process.stderr.write( "* chom-extract" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * fields: " + JSON.stringify( inputFields ) + "\n" );
+process.stderr.write( "    * delimiter : " + JSON.stringify( inputDelimiter ) + "\n" );
+process.stderr.write("\n");
 
 utils.readJSONFromSTDIN( function( datum ) {
 
 	if( _.isEmpty( datum ) ) {
-		process.stdout.write( JSON.stringify( list ) );
+		process.stderr.write("* chom-extract close\n");
 		process.exit();
 		return;
 	}
 
-	list.push( datum[ inputField ] );
+	_.each( inputFields, function( field ) {
+		process.stdout.write( datum[ field ] + inputDelimiter );	
+	} )
+	
 } );

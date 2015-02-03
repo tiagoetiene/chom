@@ -1,13 +1,10 @@
+var utils = require('fs');
 var fs = require('fs');
 program = require('commander');
 
-function parserList( list ) {
-	return list.split(",");
-}
-
 program
 	.version( '0.0.1' )
-	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", parserList )
+	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", utils.parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
 	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 1000, parseInt )
 	.option( '-a, --cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type". type is one of: date, objectid ', parserList )

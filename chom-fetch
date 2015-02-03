@@ -11,9 +11,11 @@ moment = require('moment');
 args = require("./fetch/args");
 out = require("./libs/out");
 utils = require('./libs/utils');
+require('./libs/tweets');
 
 var inputCredentials = program.credentials;
 var inputKeywords = program.keywords;
+var inputTwitterScreenNames = program.twitterScreenNames;
 var inputGroup = program.group;
 var inputLang = ( program.lang ) ? program.lang : "en"; 
 var inputStream = ( program.stream ) ? true : false;
@@ -24,6 +26,7 @@ var inputCloseOnExit = ( program.close ) ? program.close : false;
 var inputFirstN = ( program.first ) ? program.first : false;
 
 var totalNumberOfTweets = { tweets : 0 };
+var T;
 
 
 if( _.isEmpty( program.collection ) != true ) {
@@ -34,15 +37,8 @@ if( _.isEmpty( program.collection ) != true ) {
 //
 // Establishing connection with twitter
 // 
-if( inputSearch || inputStream ) {
-
-	//
-	// Sanity check. Just making sure an input credentials
-	// was provided
-	//
-	console.assert( inputCredentials != undefined );
-
-	var T = new Twit( inputCredentials[ inputGroup ] );
+if( _.isUndefined( inputCredentials ) == false ) {
+	T = new Twit( inputCredentials[ inputGroup ] );
 }
 
 //
@@ -79,7 +75,8 @@ process.stderr.write( "    * search     : " + inputSearch + "\n" );
 process.stderr.write( "    * database   : " + JSON.stringify( inputDatabase ) + "\n" );
 process.stderr.write( "    * first      : " + inputFirstN + "\n" );
 process.stderr.write( "    * close      : " + inputCloseOnExit + "\n" );
-process.stderr.write( "    * keywords: " + JSON.stringify( inputKeywords ) + "\n" );
+process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
+process.stderr.write( "    * screen_name: " + JSON.stringify( inputTwitterScreenNames ) + "\n" );
 process.stderr.write("\n");
 
 process.stdout.setMaxListeners( 0 );
@@ -116,7 +113,13 @@ function printTweet( datum ) {
 	
 }
 
-if( inputStream ) {
+if( _.isEmpty( inputTwitterScreenNames ) == false ) {
+
+	usersLookup( T, "screen_name", inputTwitterScreenNames, function( data ) {
+		_.each( data, function( datum ) { printTweet( datum ); } );
+	} );
+
+} else if( inputStream ) {
 
 	//
 	// Starting stream of tweets
