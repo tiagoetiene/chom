@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-_ = require("underscore");
-MongoClient = require("mongodb").MongoClient;
+_ = require('underscore');
+MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 Twit = require("twit");
 Readable = require('stream').Readable;
