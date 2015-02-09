@@ -61,9 +61,9 @@ if( inputKeywords ) {
 	//
 	// Lower casering and adding "@" if needed
 	//
-	_.each( inputKeywords, function( keyword, idx ) {
-		inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "@") + keyword.toLowerCase();
-	});
+	// _.each( inputKeywords, function( keyword, idx ) {
+		// inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "@") + keyword.toLowerCase();
+	// });
 }
 
 process.stderr.write("\n");

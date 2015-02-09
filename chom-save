@@ -196,7 +196,7 @@ function getKey( datum ) {
 function fixKeys( datum ) {
 	_.each( inputKeys, function( key ) {
 		if( _.has( datum, key ) == false ) {
-			process.stderr.write("Cannot found keys for " + JSON.stringify( datum ) );
+			// process.stderr.write("Cannot found keys for " + JSON.stringify( datum ) );
 			datum[ key ] = new ObjectID();
 		}
 	} );
