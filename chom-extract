@@ -6,6 +6,7 @@ utils = require('./libs/utils');
 
 var inputFields = program.fields;
 var inputDelimiter = ( _.isUndefined( program.delimiter ) == false ) ? program.delimiter : "\n";
+var inputCreateObject = ( _.isUndefined( program.createObject ) == false ) ? program.createObject : false;
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-extract" + "\n");
@@ -22,8 +23,16 @@ utils.readJSONFromSTDIN( function( datum ) {
 		return;
 	}
 
-	_.each( inputFields, function( field ) {
-		process.stdout.write( datum[ field ] + inputDelimiter );	
-	} )
+	if( inputCreateObject == false ) {
+		_.each( inputFields, function( field ) {
+			process.stdout.write( datum[ field ] + inputDelimiter );	
+		} );	
+	} else {
+		var obj = {};
+		_.each( inputFields, function( field ) {
+			obj[ field ] = datum[ field ];
+		} );
+		process.stdout.write( JSON.stringify( obj ) + inputDelimiter );	
+	}
 	
 } );
