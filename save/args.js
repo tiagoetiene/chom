@@ -1,4 +1,4 @@
-var utils = require('fs');
+var utils = require('../libs/utils');
 var fs = require('fs');
 program = require('commander');
 
@@ -7,7 +7,7 @@ program
 	.option( '-k, --keys [list]', "comma separated list of keys to be used during summarization", utils.parserList )
 	.option( '-c, --config [type]', 'configuration file that may include one or more command show in this menu' )
 	.option( '-m, --max [number]', 'maximum number of objects to be kept in memory', 1000, parseInt )
-	.option( '-a, --cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type". type is one of: date, objectid ', parserList )
+	.option( '-a, --cast [list]', 'comma separated list of pairs "key,type", where key is converted to type "type". type is one of: date, objectid ', utils.parserList )
 	.option( '-o, --code [code]', 'code to be run at input json object "datum"' )
 	.option( '-s, --save-interval [milliseconds]', 'timeinterval used to save bulk data', 1000, parseInt )
 	.option( '-i, --simulate', 'do not save to database, only simulate', false )
