@@ -9,7 +9,13 @@ module.exports = {
 	get : function( dict, field ) {
 		var fields = field.split(".");
 		var data = dict;
-		_.each( fields, function( key ) { data = data[ key ]; } );
+		for( var i = 0; i < fields.length; ++i ) {
+			var val = data[ fields[ i ] ];
+			if( _.isUndefined( val ) ) {
+				return undefined;
+			}
+			data = val; 
+		}
 		return data;
 	},
 	set : function( dict, field, value ) {
