@@ -22,8 +22,11 @@ module.exports = {
 		var fields = field.split(".");
 		var data = dict;
 		for( var i = 0; i < fields.length - 1; ++i) {
-			data[ fields[ i ] ] = {};
-			data = data[ fields[ i ] ];
+			var f = fields[ i ];
+			if( _.has( data, f ) == false ) {
+				data[ f ] = {};
+			}
+			data = data[ f ];
 		}
 		data[ fields[ fields.length - 1 ] ] = value;
 	},
