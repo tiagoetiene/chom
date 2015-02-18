@@ -6,6 +6,21 @@ var _ = require("underscore");
 process.stdin.setEncoding('utf8');
 
 module.exports = {
+	get : function( dict, field ) {
+		var fields = field.split(".");
+		var data = dict;
+		_.each( fields, function( key ) { data = data[ key ]; } );
+		return data;
+	},
+	set : function( dict, field, value ) {
+		var fields = field.split(".");
+		var data = dict;
+		for( var i = 0; i < fields.length - 1; ++i) {
+			data[ fields[ i ] ] = {};
+			data = data[ fields[ i ] ];
+		}
+		data[ fields[ fields.length - 1 ] ] = value;
+	},
 	parserList : function( list ) {
 		return list.split(",");
 	},

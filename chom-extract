@@ -25,12 +25,12 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 	if( inputCreateObject == false ) {
 		_.each( inputFields, function( field ) {
-			process.stdout.write( datum[ field ] + inputDelimiter );	
+			process.stdout.write( utils.get( datum, field ) + inputDelimiter );	
 		} );	
 	} else {
 		var obj = {};
 		_.each( inputFields, function( field ) {
-			obj[ field ] = datum[ field ];
+			utils.set( obj, field, utils.get( datum, field ) );
 		} );
 		process.stdout.write( JSON.stringify( obj ) + inputDelimiter );	
 	}
