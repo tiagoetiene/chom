@@ -90,7 +90,7 @@ function checkMaxLimitReached() {
 
 function printTweet( datum ) {
 
-	if( inputKeywords ) {
+	if( _.isEmpty( inputKeywords ) == false ) {
 		var message = datum.text.toLowerCase();
 
 		_.each( inputKeywords, function( keyword ) {
