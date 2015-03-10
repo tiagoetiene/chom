@@ -4,15 +4,18 @@ _ = require("underscore");
 args = require('./extract/args');
 utils = require('./libs/utils');
 
+process.stderr.write( JSON.stringify( program ) + "\n" );
 var inputFields = program.fields;
+var inputNoRetweets = ( _.has( program, "retweets" ) ) ? true : false;
 var inputDelimiter = ( _.isUndefined( program.delimiter ) == false ) ? program.delimiter : "\n";
 var inputCreateObject = ( _.isUndefined( program.createObject ) == false ) ? program.createObject : false;
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-extract" + "\n");
 process.stderr.write( "  * parameters settings:\n");
-process.stderr.write( "    * fields: " + JSON.stringify( inputFields ) + "\n" );
-process.stderr.write( "    * delimiter : " + JSON.stringify( inputDelimiter ) + "\n" );
+process.stderr.write( "    * --fields: " + JSON.stringify( inputFields ) + "\n" );
+process.stderr.write( "    * --no-retweets: " + JSON.stringify( inputNoRetweets ) + "\n" );
+process.stderr.write( "    * --delimiter : " + JSON.stringify( inputDelimiter ) + "\n" );
 process.stderr.write("\n");
 
 utils.readJSONFromSTDIN( function( datum ) {
@@ -23,16 +26,26 @@ utils.readJSONFromSTDIN( function( datum ) {
 		return;
 	}
 
-	if( inputCreateObject == false ) {
-		_.each( inputFields, function( field ) {
-			process.stdout.write( utils.get( datum, field ) + inputDelimiter );	
-		} );	
+	if( inputNoRetweets == true && 
+		  _.has( datum, "retweeted_status" ) ) {
 	} else {
-		var obj = {};
-		_.each( inputFields, function( field ) {
-			utils.set( obj, field, utils.get( datum, field ) );
-		} );
-		process.stdout.write( JSON.stringify( obj ) + inputDelimiter );	
+
+		if( inputCreateObject == false ) {
+			var out = "";
+			_.each( inputFields, function( field ) {
+				out += utils.get( datum, field ) + ","
+			} );
+			
+			process.stdout.write( out + inputDelimiter );	
+		} else {
+			var obj = {};
+			_.each( inputFields, function( field ) {
+				utils.set( obj, field, utils.get( datum, field ) );
+			} );
+			process.stdout.write( JSON.stringify( obj ) + inputDelimiter );	
+		}
 	}
+
+	
 	
 } );
