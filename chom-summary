@@ -50,9 +50,10 @@ utils.readJSONFromSTDIN( function( tweet ) {
 
 		AccountsTree[ twitter_handle ]
 			.depth( inputDepth )
-			.dateValuer( function( d ) { 
-				totalNumberOfTweets.mostRecent = Math.max( totalNumberOfTweets.mostRecent, d.created_at );
-				return new Date( d.created_at ); 
+			.dateValuer( function( d ) {
+				var date = new Date( d.created_at );
+				totalNumberOfTweets.mostRecent = Math.max( totalNumberOfTweets.mostRecent, date );
+				return date; 
 			} )
 			.valuer( function( d ) { 
 				if( isNaN( d[ inputField ] ) || d[ inputField ] === null ) {
