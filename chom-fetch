@@ -61,9 +61,9 @@ if( inputKeywords ) {
 	//
 	// Lower casering and adding "@" if needed
 	//
-	// _.each( inputKeywords, function( keyword, idx ) {
-		// inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "@") + keyword.toLowerCase();
-	// });
+	_.each( inputKeywords, function( keyword, idx ) {
+		inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "") + keyword.toLowerCase();
+	});
 }
 
 process.stderr.write("\n");
@@ -90,7 +90,8 @@ function checkMaxLimitReached() {
 
 function printTweet( datum ) {
 
-	if( inputKeywords ) {
+	if( inputKeywords.length ) {
+
 		var message = datum.text.toLowerCase();
 
 		_.each( inputKeywords, function( keyword ) {
