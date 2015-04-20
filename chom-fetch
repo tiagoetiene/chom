@@ -59,10 +59,10 @@ if( inputKeywords ) {
 		inputKeywords = _.filter( inputKeywords, function( _ , idx ) { return idx % inputCredentials.length == inputGroup; });
 
 	//
-	// Lower casering and adding "@" if needed
+	// Lower caseing
 	//
 	_.each( inputKeywords, function( keyword, idx ) {
-		inputKeywords[ idx ] = ((keyword.charAt(0) == "@") ? "" : "") + keyword.toLowerCase();
+		inputKeywords[ idx ] = keyword.toLowerCase();
 	});
 }
 
