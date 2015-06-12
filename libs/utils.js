@@ -2,8 +2,21 @@ var fs = require('fs');
 var JSONStream 	= require('JSONStream');
 var es 				= require('event-stream');
 var _ = require("underscore");
+var mkdirp = require( "mkdirp" );
 
 process.stdin.setEncoding('utf8');
+
+function getUserHome() {
+	return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
+
+function getCHOMDir() {
+	return getUserHome() + '/.chom';
+}
+
+function getCredentialsFile() {
+	return getCHOMDir() + "/credentials.json";
+}
 
 module.exports = {
 	get : function( dict, field ) {
@@ -70,6 +83,32 @@ module.exports = {
 				// return data (not sure why)
 				return data;
 			} ) );
+	},
+	getCHOMDir : function() {
+		return getCHOMDir();
+	},
+	getCredentialsFile : function() {
+		return getCredentialsFile();
+	},
+	getCredential : function() {
+
+		//
+		// If there are no credentials file, then there's nothing to do
+		//
+		var credentialsFile = getCredentialsFile();
+		if ( !fs.existsSync( credentialsFile ) ) {
+			return {};
+		}
+
+		//
+		// Read credentials and return one at random. Need to improve this
+		//
+		var credentialsMap = JSON.parse( fs.readFileSync( credentialsFile ) );
+		var keys = _.keys( credentialsMap );
+		if( keys.length > 0 ) {
+			return credentialsMap[ keys[ _.random( 0, ( keys.length-1 ) ) ] ];
+		}
+		return {};
 	}
 }
 
