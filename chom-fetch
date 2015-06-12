@@ -8,9 +8,14 @@ Readable = require('stream').Readable;
 emitter = require('events').EventEmitter;
 moment = require('moment');
 
-args = require("./fetch/args");
-out = require("./libs/out");
+args 	= require("./fetch/args");
+out 	= require("./libs/out");
 utils = require('./libs/utils');
+
+var fetchStream = require("./fetch/stream");
+
+
+
 require('./libs/tweets');
 
 var inputCredentials = program.credentials;
@@ -89,6 +94,7 @@ function checkMaxLimitReached() {
 }
 
 function printTweet( datum ) {
+
 	if( _.isEmpty( inputKeywords ) == false ) {
 		var message = datum.text.toLowerCase();
 
@@ -120,11 +126,7 @@ if( _.isEmpty( inputTwitterScreenNames ) == false ) {
 
 } else if( inputStream ) {
 
-	//
-	// Starting stream of tweets
-	//
-	var stream = T.stream( "statuses/filter", { track: inputKeywords, language: inputLang });
-	stream.on( "tweet", printTweet );
+	fetchStream.start( inputKeywords, inputLang, inputCredentials, printTweet );
 
 } else if( inputSearch ) {
 
