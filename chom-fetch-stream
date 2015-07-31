@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+var _             = require('underscore');
+var args 	        = require("./fetch/stream/args");
+var fetchStream   = require("./fetch/stream");
+
+
+//
+// Input parameters
+//
+var inputKeywords = program.keywords;
+var inputLang     = program.lang; 
+
+
+//
+// Removing all keywords that are empty strigns
+//
+inputKeywords = _.filter( inputKeywords, function( keyword ) { 
+	return _.isEmpty( keyword ) == false; 
+} );
+
+//
+// Lower caseing
+//
+_.each( inputKeywords, function( keyword, idx ) {
+	keyword = keyword.toLowerCase();
+});
+
+
+function printTweet( datum ) {
+	var message = datum.text.toLowerCase();
+	_.each( inputKeywords, function( keyword ) {
+		if( message.indexOf( keyword ) != -1 ) {
+			datum.keyword = keyword;
+			datum.created_at = new Date( datum.created_at );
+			var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
+			console.assert( ok == true );
+		}
+	} );	
+}
+
+process.stderr.write("\n");
+process.stderr.write( "* chom-fetch-stream" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
+process.stderr.write( "    * language   : " + JSON.stringify( inputLang ) + "\n" );
+process.stderr.write("\n");
+
+fetchStream.start( inputKeywords, inputLang, printTweet );

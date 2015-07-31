@@ -1,275 +1,286 @@
 #!/usr/bin/env node
 
-_ = require('underscore');
-MongoClient = require('mongodb').MongoClient;
-ObjectID = require('mongodb').ObjectID
-Twit = require("twit");
-Readable = require('stream').Readable;
-emitter = require('events').EventEmitter;
-moment = require('moment');
+program = require('commander');
 
-args 	= require("./fetch/args");
-out 	= require("./libs/out");
-utils = require('./libs/utils');
+program
+	.version('0.0.1')
+	.command('stream [options]', 'start streaming data from Twitter API')
+	.parse(process.argv);
 
-var fetchStream = require("./fetch/stream");
-
-
-
-require('./libs/tweets');
-
-var inputCredentials = program.credentials;
-var inputKeywords = program.keywords;
-var inputTwitterScreenNames = program.twitterScreenNames;
-var inputGroup = program.group;
-var inputLang = program.lang; 
-var inputStream = ( program.stream ) ? true : false;
-var inputSearch = ( program.search ) ? program.search : false;
-var inputUntilDate = ( typeof inputSearch != "boolean" ) ? inputSearch : "";
-var inputDatabase = program.database;
-var inputCloseOnExit = ( program.close ) ? program.close : false;
-var inputFirstN = ( program.first ) ? program.first : false;
-
-var totalNumberOfTweets = { tweets : 0 };
-var T;
-
-
-if( _.isEmpty( program.collection ) != true ) {
-	inputDatabase.collection = program.collection;
+if( process.argv.length <= 2 ) {
+	program.help();
 }
 
+// _ = require('underscore');
+// MongoClient = require('mongodb').MongoClient;
+// ObjectID = require('mongodb').ObjectID
+// Twit = require("twit");
+// Readable = require('stream').Readable;
+// emitter = require('events').EventEmitter;
+// moment = require('moment');
 
-//
-// Establishing connection with twitter
-// 
-if( _.isUndefined( inputCredentials ) == false ) {
-	T = new Twit( inputCredentials[ inputGroup ] );
-}
+// args 	= require("./fetch/args");
+// out 	= require("./libs/out");
+// utils = require('./libs/utils');
 
-//
-// Pre-processing keywords
-//
-if( inputKeywords ) {
+// var fetchStream = require("./fetch/stream");
 
-	//
-	// Removing all keywords that are empty strigns
-	//
-	inputKeywords = _.filter( inputKeywords, function( keyword ) { return _.isEmpty( keyword ) == false; } );
 
-	//
-	// Separating the input keywords in groups, according to the number
-	// of twitter certificates available
-	//
-	if( inputCredentials )
-		inputKeywords = _.filter( inputKeywords, function( _ , idx ) { return idx % inputCredentials.length == inputGroup; });
 
-	//
-	// Lower caseing
-	//
-	_.each( inputKeywords, function( keyword, idx ) {
-		inputKeywords[ idx ] = keyword.toLowerCase();
-	});
-}
+// require('./libs/tweets');
 
-process.stderr.write("\n");
-process.stderr.write( "* chom-fetch" + "\n");
-process.stderr.write( "  * parameters settings:\n");
-process.stderr.write( "    * credentials: " + JSON.stringify( inputCredentials ) + "\n" );
-process.stderr.write( "    * stream     : " + inputStream + "\n" );
-process.stderr.write( "    * search     : " + inputSearch + "\n" );
-process.stderr.write( "    * database   : " + JSON.stringify( inputDatabase ) + "\n" );
-process.stderr.write( "    * first      : " + inputFirstN + "\n" );
-process.stderr.write( "    * close      : " + inputCloseOnExit + "\n" );
-process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
-process.stderr.write( "    * screen_name: " + JSON.stringify( inputTwitterScreenNames ) + "\n" );
-process.stderr.write("\n");
+// var inputCredentials = program.credentials;
+// var inputKeywords = program.keywords;
+// var inputTwitterScreenNames = program.twitterScreenNames;
+// var inputGroup = program.group;
+// var inputLang = program.lang; 
+// var inputStream = ( program.stream ) ? true : false;
+// var inputSearch = ( program.search ) ? program.search : false;
+// var inputUntilDate = ( typeof inputSearch != "boolean" ) ? inputSearch : "";
+// var inputDatabase = program.database;
+// var inputCloseOnExit = ( program.close ) ? program.close : false;
+// var inputFirstN = ( program.first ) ? program.first : false;
 
-process.stdout.setMaxListeners( 0 );
+// var totalNumberOfTweets = { tweets : 0 };
+// var T;
 
-function checkMaxLimitReached() {
-	if( inputFirstN && totalNumberOfTweets.tweets == inputFirstN ) {
-		process.stdout.write( JSON.stringify( {} ) + "\n" );
-		process.exit();
-	}
-}
 
-function printTweet( datum ) {
+// if( _.isEmpty( program.collection ) != true ) {
+// 	inputDatabase.collection = program.collection;
+// }
 
-	if( _.isEmpty( inputKeywords ) == false ) {
-		var message = datum.text.toLowerCase();
 
-		_.each( inputKeywords, function( keyword ) {
-			if( message.indexOf( keyword ) != -1 ) {
-				datum.keyword = keyword;
-				datum.created_at = new Date( datum.created_at );
-				var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
-				console.assert( ok == true );
-				totalNumberOfTweets.tweets++;
+// //
+// // Establishing connection with twitter
+// // 
+// if( _.isUndefined( inputCredentials ) == false ) {
+// 	T = new Twit( inputCredentials[ inputGroup ] );
+// }
 
-				checkMaxLimitReached();
-			}
-		} );
-	} else {
-		process.stdout.write( JSON.stringify( datum ) + "\n" );
-		totalNumberOfTweets.tweets++;
+// //
+// // Pre-processing keywords
+// //
+// if( inputKeywords ) {
 
-		checkMaxLimitReached();
-	}
+// 	//
+// 	// Removing all keywords that are empty strigns
+// 	//
+// 	inputKeywords = _.filter( inputKeywords, function( keyword ) { return _.isEmpty( keyword ) == false; } );
+
+// 	//
+// 	// Separating the input keywords in groups, according to the number
+// 	// of twitter certificates available
+// 	//
+// 	if( inputCredentials )
+// 		inputKeywords = _.filter( inputKeywords, function( _ , idx ) { return idx % inputCredentials.length == inputGroup; });
+
+// 	//
+// 	// Lower caseing
+// 	//
+// 	_.each( inputKeywords, function( keyword, idx ) {
+// 		inputKeywords[ idx ] = keyword.toLowerCase();
+// 	});
+// }
+
+// process.stderr.write("\n");
+// process.stderr.write( "* chom-fetch" + "\n");
+// process.stderr.write( "  * parameters settings:\n");
+// process.stderr.write( "    * credentials: " + JSON.stringify( inputCredentials ) + "\n" );
+// process.stderr.write( "    * stream     : " + inputStream + "\n" );
+// process.stderr.write( "    * search     : " + inputSearch + "\n" );
+// process.stderr.write( "    * database   : " + JSON.stringify( inputDatabase ) + "\n" );
+// process.stderr.write( "    * first      : " + inputFirstN + "\n" );
+// process.stderr.write( "    * close      : " + inputCloseOnExit + "\n" );
+// process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
+// process.stderr.write( "    * screen_name: " + JSON.stringify( inputTwitterScreenNames ) + "\n" );
+// process.stderr.write("\n");
+
+// process.stdout.setMaxListeners( 0 );
+
+// function checkMaxLimitReached() {
+// 	if( inputFirstN && totalNumberOfTweets.tweets == inputFirstN ) {
+// 		process.stdout.write( JSON.stringify( {} ) + "\n" );
+// 		process.exit();
+// 	}
+// }
+
+// function printTweet( datum ) {
+
+// 	if( _.isEmpty( inputKeywords ) == false ) {
+// 		var message = datum.text.toLowerCase();
+
+// 		_.each( inputKeywords, function( keyword ) {
+// 			if( message.indexOf( keyword ) != -1 ) {
+// 				datum.keyword = keyword;
+// 				datum.created_at = new Date( datum.created_at );
+// 				var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
+// 				console.assert( ok == true );
+// 				totalNumberOfTweets.tweets++;
+
+// 				checkMaxLimitReached();
+// 			}
+// 		} );
+// 	} else {
+// 		process.stdout.write( JSON.stringify( datum ) + "\n" );
+// 		totalNumberOfTweets.tweets++;
+
+// 		checkMaxLimitReached();
+// 	}
 	
-}
+// }
 
-if( _.isEmpty( inputTwitterScreenNames ) == false ) {
+// if( _.isEmpty( inputTwitterScreenNames ) == false ) {
 
-	usersLookup( T, "screen_name", inputTwitterScreenNames, function( data ) {
-		_.each( data, function( datum ) { printTweet( datum ); } );
-	} );
+// 	usersLookup( T, "screen_name", inputTwitterScreenNames, function( data ) {
+// 		_.each( data, function( datum ) { printTweet( datum ); } );
+// 	} );
 
-} else if( inputStream ) {
+// } else if( inputStream ) {
 
-	fetchStream.start( inputKeywords, inputLang, inputCredentials, printTweet );
+// 	fetchStream.start( inputKeywords, inputLang, inputCredentials, printTweet );
 
-} else if( inputSearch ) {
+// } else if( inputSearch ) {
 
-	//
-	//  Search for all tweets 
-	//
-	var q = "";
-	_.each( inputKeywords, function( keyword, idx ) {
-		q += keyword;
-		q += ( idx < ( inputKeywords.length - 1) ) ?  " OR " : "";
-	});
+// 	//
+// 	//  Search for all tweets 
+// 	//
+// 	var q = "";
+// 	_.each( inputKeywords, function( keyword, idx ) {
+// 		q += keyword;
+// 		q += ( idx < ( inputKeywords.length - 1) ) ?  " OR " : "";
+// 	});
 	
-	var first = true;
-	var maxid = "";
-	var stop = false;
-	var running = false;
-	var handle = setInterval( function() {
-		if( stop ) {
-			clearInterval( handle );
-		} else {
-			// In case nothing is running, let's do something
-			if( running == false ) {
+// 	var first = true;
+// 	var maxid = "";
+// 	var stop = false;
+// 	var running = false;
+// 	var handle = setInterval( function() {
+// 		if( stop ) {
+// 			clearInterval( handle );
+// 		} else {
+// 			// In case nothing is running, let's do something
+// 			if( running == false ) {
 
-				// Ok, running has started
-				running = true;
+// 				// Ok, running has started
+// 				running = true;
 
-				// Building query string
-				var options = { q : q, count : 100};
-				if( _.isEmpty( maxid ) == false ) {
-					options.max_id =  maxid;	
-				}
-				if( _.isEmpty( inputUntilDate ) == false && first == true ) {
-					var date = moment( new Date( inputUntilDate ) );
-					options.until = date.format( "YYYY-MM-DD");
-					first = false;
-				}
+// 				// Building query string
+// 				var options = { q : q, count : 100};
+// 				if( _.isEmpty( maxid ) == false ) {
+// 					options.max_id =  maxid;	
+// 				}
+// 				if( _.isEmpty( inputUntilDate ) == false && first == true ) {
+// 					var date = moment( new Date( inputUntilDate ) );
+// 					options.until = date.format( "YYYY-MM-DD");
+// 					first = false;
+// 				}
 
-				T.get( 'search/tweets', options, function( err, data, response ) {
-					if( err ) {
-						console.log( "* Error found while searching tweets: ", err );
-						throw err;
-					}
+// 				T.get( 'search/tweets', options, function( err, data, response ) {
+// 					if( err ) {
+// 						console.log( "* Error found while searching tweets: ", err );
+// 						throw err;
+// 					}
 
-					if( data != undefined ) {
-						var tweets = data.statuses;
-						_.each( tweets, function( tweet ) { if( tweet.id ) printTweet( tweet ); });
+// 					if( data != undefined ) {
+// 						var tweets = data.statuses;
+// 						_.each( tweets, function( tweet ) { if( tweet.id ) printTweet( tweet ); });
 
-						if( data.search_metadata ) {
-							var next = data.search_metadata.next_results;
-							if( next ) {
-								var matches = next.match( /\?\max\_id=(.+?)\&/ );
-								if( matches.length == 2 ) {
-									// Retrieving next page
-									maxid = matches[ 1 ];
-								}
-							}
-						}
-					}
-					running = false;
-				});
-			}
-		}
-	}, 2100 );
-} else if( inputDatabase ) {
+// 						if( data.search_metadata ) {
+// 							var next = data.search_metadata.next_results;
+// 							if( next ) {
+// 								var matches = next.match( /\?\max\_id=(.+?)\&/ );
+// 								if( matches.length == 2 ) {
+// 									// Retrieving next page
+// 									maxid = matches[ 1 ];
+// 								}
+// 							}
+// 						}
+// 					}
+// 					running = false;
+// 				});
+// 			}
+// 		}
+// 	}, 2100 );
+// } else if( inputDatabase ) {
 
-	//
-	// Reads data from database, instead of the internet
-	//
-	MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
+// 	//
+// 	// Reads data from database, instead of the internet
+// 	//
+// 	MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
 	
-		if(err)  {
-			console.log('* Error found while connecting to the database:', err);
-			throw err;
-		}
+// 		if(err)  {
+// 			console.log('* Error found while connecting to the database:', err);
+// 			throw err;
+// 		}
 
-		var collection = db.collection( inputDatabase.collection );
+// 		var collection = db.collection( inputDatabase.collection );
 
-		//
-		// latestID helps with streaming: let's get tweets 
-		// with ID greater than the latest
-		//
-		var lastestID = new ObjectID( 0 );
+// 		//
+// 		// latestID helps with streaming: let's get tweets 
+// 		// with ID greater than the latest
+// 		//
+// 		var lastestID = new ObjectID( 0 );
 
-		//
-		// Tracking whether streaming is running or not
-		//
-		var isRunning = false;
-		setInterval( function() {
+// 		//
+// 		// Tracking whether streaming is running or not
+// 		//
+// 		var isRunning = false;
+// 		setInterval( function() {
 
-			//
-			// We are polling the database constantly.
-			// Thus, we will start a new stream, only if we reached 
-			// the end of the database, in other words, if there are
-			// no streams running
-			//
-			if( isRunning == false ) {
+// 			//
+// 			// We are polling the database constantly.
+// 			// Thus, we will start a new stream, only if we reached 
+// 			// the end of the database, in other words, if there are
+// 			// no streams running
+// 			//
+// 			if( isRunning == false ) {
 
-				//
-				// Streaming just started, let's make it true :)
-				//
-				isRunning = true;
+// 				//
+// 				// Streaming just started, let's make it true :)
+// 				//
+// 				isRunning = true;
 
-				//
-				// The beginning of our streaming process is lastestID
-				//
-				var stream = collection.find( {  _id : { $gt :  lastestID } } ).sort( [ [ "_id", "asc" ] ] ).stream();
+// 				//
+// 				// The beginning of our streaming process is lastestID
+// 				//
+// 				var stream = collection.find( {  _id : { $gt :  lastestID } } ).sort( [ [ "_id", "asc" ] ] ).stream();
 
-				//
-				// When a tweet arrive, let's print it (to the console)
-				//
-				stream.on( "data", function( tweet ) {
-					if( err ) {
-						console.log('* Error found while searching collection:', err);
-						throw err;
-					}
-					lastestID = new ObjectID( tweet._id );
-					printTweet( tweet );
-				} );
+// 				//
+// 				// When a tweet arrive, let's print it (to the console)
+// 				//
+// 				stream.on( "data", function( tweet ) {
+// 					if( err ) {
+// 						console.log('* Error found while searching collection:', err);
+// 						throw err;
+// 					}
+// 					lastestID = new ObjectID( tweet._id );
+// 					printTweet( tweet );
+// 				} );
 
-				//
-				// Case we reach the end, then we are no longer runniing
-				//
-				stream.on( "close", function() {
-					if( inputCloseOnExit ) {
-						process.stdout.write( JSON.stringify( {} ) + "\n" );
-						process.stderr.write("* chom-fetch close\n");
+// 				//
+// 				// Case we reach the end, then we are no longer runniing
+// 				//
+// 				stream.on( "close", function() {
+// 					if( inputCloseOnExit ) {
+// 						process.stdout.write( JSON.stringify( {} ) + "\n" );
+// 						process.stderr.write("* chom-fetch close\n");
 
-						db.close();
-						process.exit();
-					}
-					isRunning = false;
-				});
+// 						db.close();
+// 						process.exit();
+// 					}
+// 					isRunning = false;
+// 				});
 
-				//
-				// Case we reach an error, let's print it
-				//
-				stream.on( "error", function( err ) {
-					process.stderr.write( JSON.stringify( err ) );
-					isRunning = false;
-				});
-			}
-		}, 2000 );
-	} );
-}
+// 				//
+// 				// Case we reach an error, let's print it
+// 				//
+// 				stream.on( "error", function( err ) {
+// 					process.stderr.write( JSON.stringify( err ) );
+// 					isRunning = false;
+// 				});
+// 			}
+// 		}, 2000 );
+// 	} );
+// }
 
-utils.printToFile( "/tmp/chom.fetch.txt", totalNumberOfTweets );
+// utils.printToFile( "/tmp/chom.fetch.txt", totalNumberOfTweets );

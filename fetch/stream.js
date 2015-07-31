@@ -1,39 +1,42 @@
-var _ 		= require( "underscore" );
-var utils = require('../libs/utils');
-var dns		= require('dns');
+var _ 		= require( 'underscore' );
+var Twit  = require( 'twit' );
+var utils = require( '../libs/utils' );
+var dns		= require( 'dns' );
 
 var streaming;
 
-
 module.exports = {
-	start : function( keywords, lang, credentials, callback ) {
+	start : function( keywords, lang, callback ) {
+
 		setInterval( function atEachInterval() {
 
 			if( streaming === true ) {
 				return;
 			}
+			
+			streaming = true;
 
-			dns.resolve( 'www.google.com', function(err) {
+			dns.resolve( 'www.google.com', function( err ) {
 
 				if ( err ) {
 					streaming = false;
+					process.stderr.write( err );
 					return;
 				}
-
-				streaming = true;
 				
 				//
 				// If no credentials were passed as input,
 				// then lookup the database
 				//
-				if( _.isUndefined( credentials ) ) {
-					credentials = utils.getCredential();
-				}
+				credentials = utils.getCredential();
 
 				//
 				// If no credentials were found, then return
 				//
 				if( _.isEmpty( credentials ) ) {
+					process.stderr.write( "* There are no credentials available\n" );
+					process.stderr.write( "  Please add new credentials using:\n");
+					process.stderr.write( "     chom credentials add\n");
 					return;
 				}
 
