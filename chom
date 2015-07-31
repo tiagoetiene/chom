@@ -4,7 +4,7 @@ program = require('commander');
 
 program
 	.version('0.0.1')
-	.command('add-credentials [options]', 'add app keys to a database')
+	.command('credentials [options]', 'add app keys to a database')
 	.command('extract [options]', 'extract list of value from JSON objects')
 	.command('fake [options]', 'create a fake tweet; useful for debugging')
 	.command('fetch [options]', 'fetch tweets from Twitter or database')
