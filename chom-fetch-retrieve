@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+
+var _             = require('underscore');
+var args 	        = require("./fetch/retrieve/args");
+var MongoClient   = require('mongodb').MongoClient;
+var ObjectID 		  = require('mongodb').ObjectID;
+
+//
+// Input parameters
+//
+var inputMongoURL    = program.mongo_url;
+var inputCollection  = program.collection;
+var inputCloseOnExit = ( program.close ) ? program.close : false;
+
+process.stderr.write( "* chom-fetch-retrieve" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * mongo url    : " + JSON.stringify( inputMongoURL ) + "\n" );
+process.stderr.write( "    * collection   : " + JSON.stringify( inputCollection ) + "\n" );
+process.stderr.write( "    * close on exit: " + JSON.stringify( inputCloseOnExit ) + "\n" );
+process.stderr.write("\n");
+
+function printTweet( datum ) {
+	process.stdout.write( JSON.stringify( datum ) + "\n" );
+}
+
+//
+// Reads data from database, instead of the internet
+//
+MongoClient.connect( inputMongoURL, function(err, db) {
+
+	if(err)  {
+		console.log('* Error found while connecting to the database:', err);
+		throw err;
+	}
+
+	var collection = db.collection( inputCollection );
+
+	//
+	// latestID helps with streaming: let's get tweets 
+	// with ID greater than the latest
+	//
+	var lastestID = new ObjectID( 0 );
+
+	//
+	// Tracking whether streaming is running or not
+	//
+	var isRunning = false;
+	setInterval( function() {
+
+		//
+		// We are polling the database constantly.
+		// Thus, we will start a new stream, only if we reached 
+		// the end of the database, in other words, if there are
+		// no streams running
+		//
+		if( isRunning == true ) {
+			return;
+		}
+		
+		//
+		// Streaming just started, let's make it true :)
+		//
+		isRunning = true;
+
+		//
+		// The beginning of our streaming process is lastestID
+		//
+		var stream = collection.find( {  _id : { $gt :  lastestID } } )
+													 .sort( [ [ "_id", "asc" ] ] )
+													 .stream();
+
+		//
+		// When a tweet arrive, let's print it (to the console)
+		//
+		stream.on( "data", function( tweet ) {
+			if( err ) {
+				console.log('* Error found while searching collection:', err);
+				throw err;
+			}
+			lastestID = new ObjectID( tweet._id );
+			printTweet( tweet );
+		} );
+
+		//
+		// In case we reach the end, then we are no longer running
+		//
+		stream.on( "close", function() {
+
+			if( inputCloseOnExit ) {
+
+				process.stdout.write( JSON.stringify( {} ) + "\n" );
+				process.stderr.write("* chom-fetch-retrieve close\n");
+				db.close();
+				process.exit();
+
+			}
+			isRunning = false;
+		});
+
+		//
+		// In case we reach an error, let's print it
+		//
+		stream.on( "error", function( err ) {
+
+			process.stderr.write( "[error] ", JSON.stringify( err ) );
+			isRunning = false;
+
+		});
+
+	}, 10000 );
+} );
