@@ -136,10 +136,6 @@ if( process.argv.length <= 2 ) {
 // 		_.each( data, function( datum ) { printTweet( datum ); } );
 // 	} );
 
-// } else if( inputStream ) {
-
-// 	fetchStream.start( inputKeywords, inputLang, inputCredentials, printTweet );
-
 // } else if( inputSearch ) {
 
 // 	//
@@ -202,86 +198,5 @@ if( process.argv.length <= 2 ) {
 // 			}
 // 		}
 // 	}, 2100 );
-// } else if( inputDatabase ) {
-
-// 	//
-// 	// Reads data from database, instead of the internet
-// 	//
-// 	MongoClient.connect( inputDatabase.mongo_url, function(err, db) {
-	
-// 		if(err)  {
-// 			console.log('* Error found while connecting to the database:', err);
-// 			throw err;
-// 		}
-
-// 		var collection = db.collection( inputDatabase.collection );
-
-// 		//
-// 		// latestID helps with streaming: let's get tweets 
-// 		// with ID greater than the latest
-// 		//
-// 		var lastestID = new ObjectID( 0 );
-
-// 		//
-// 		// Tracking whether streaming is running or not
-// 		//
-// 		var isRunning = false;
-// 		setInterval( function() {
-
-// 			//
-// 			// We are polling the database constantly.
-// 			// Thus, we will start a new stream, only if we reached 
-// 			// the end of the database, in other words, if there are
-// 			// no streams running
-// 			//
-// 			if( isRunning == false ) {
-
-// 				//
-// 				// Streaming just started, let's make it true :)
-// 				//
-// 				isRunning = true;
-
-// 				//
-// 				// The beginning of our streaming process is lastestID
-// 				//
-// 				var stream = collection.find( {  _id : { $gt :  lastestID } } ).sort( [ [ "_id", "asc" ] ] ).stream();
-
-// 				//
-// 				// When a tweet arrive, let's print it (to the console)
-// 				//
-// 				stream.on( "data", function( tweet ) {
-// 					if( err ) {
-// 						console.log('* Error found while searching collection:', err);
-// 						throw err;
-// 					}
-// 					lastestID = new ObjectID( tweet._id );
-// 					printTweet( tweet );
-// 				} );
-
-// 				//
-// 				// Case we reach the end, then we are no longer runniing
-// 				//
-// 				stream.on( "close", function() {
-// 					if( inputCloseOnExit ) {
-// 						process.stdout.write( JSON.stringify( {} ) + "\n" );
-// 						process.stderr.write("* chom-fetch close\n");
-
-// 						db.close();
-// 						process.exit();
-// 					}
-// 					isRunning = false;
-// 				});
-
-// 				//
-// 				// Case we reach an error, let's print it
-// 				//
-// 				stream.on( "error", function( err ) {
-// 					process.stderr.write( JSON.stringify( err ) );
-// 					isRunning = false;
-// 				});
-// 			}
-// 		}, 2000 );
-// 	} );
-// }
 
 // utils.printToFile( "/tmp/chom.fetch.txt", totalNumberOfTweets );
