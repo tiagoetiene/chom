@@ -107,5 +107,9 @@ function startStreaming( keywords, lang, callback ) {
 		} );
 	}
 
+//
+// Handling signals
+//
 process.on('SIGINT', onExit );
+
 startStreaming( inputKeywords, inputLang, printTweet );

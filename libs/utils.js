@@ -109,7 +109,7 @@ module.exports = {
 				}
 			} );
 
-		} , 10000);
+		}, 10000);
 	},
 	readJSONFromSTDIN : function( callback ) {
 		process
@@ -200,10 +200,8 @@ function pad(str, len, pad, dir) {
                 str = str + Array(len + 1 - str.length).join(pad);
             break;
 
-        } // switch
-
+        }
     }
 
     return str;
-
 }
