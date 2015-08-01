@@ -45,7 +45,7 @@ MongoClient.connect( inputMongoURL, function(err, db) {
 	// Tracking whether streaming is running or not
 	//
 	var isRunning = false;
-	setInterval( function() {
+	var handle = setInterval( function() {
 
 		//
 		// We are polling the database constantly.
@@ -84,18 +84,17 @@ MongoClient.connect( inputMongoURL, function(err, db) {
 		//
 		// In case we reach the end, then we are no longer running
 		//
-		stream.on( "close", function() {
-
+		stream.on( "end", function() {
 			if( inputCloseOnExit ) {
 
 				process.stdout.write( JSON.stringify( {} ) + "\n" );
-				process.stderr.write("* chom-fetch-retrieve close\n");
+				process.stderr.write("* chom-database-fetch close\n");
 				db.close();
-				process.exit();
+				clearInterval( handle );
 
 			}
 			isRunning = false;
-		});
+		} );
 
 		//
 		// In case we reach an error, let's print it
