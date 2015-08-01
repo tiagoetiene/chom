@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var _             = require('underscore');
-var args 	        = require("./fetch/retrieve/args");
+var args 	        = require("./database/fetch/args");
 var MongoClient   = require('mongodb').MongoClient;
 var ObjectID 		  = require('mongodb').ObjectID;
 
@@ -12,7 +12,7 @@ var inputMongoURL    = program.mongo_url;
 var inputCollection  = program.collection;
 var inputCloseOnExit = ( program.close ) ? program.close : false;
 
-process.stderr.write( "* chom-fetch-retrieve" + "\n");
+process.stderr.write( "* chom-database-fetch" + "\n");
 process.stderr.write( "  * parameters settings:\n");
 process.stderr.write( "    * mongo url    : " + JSON.stringify( inputMongoURL ) + "\n" );
 process.stderr.write( "    * collection   : " + JSON.stringify( inputCollection ) + "\n" );
@@ -70,7 +70,7 @@ MongoClient.connect( inputMongoURL, function(err, db) {
 													 .stream();
 
 		//
-		// When a tweet arrive, let's print it (to the console)
+		// When a tweet arrives, let's print it (to the console)
 		//
 		stream.on( "data", function( tweet ) {
 			if( err ) {
