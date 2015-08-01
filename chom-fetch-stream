@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 var _             = require('underscore');
-var args 	        = require("./fetch/stream/args");
-var fetchStream   = require("./fetch/stream");
+var Twit  				= require( 'twit' );
+var dns						= require( 'dns' );
+
+var args 	        = require( './fetch/stream/args' );
+var utils         = require( './libs/utils' );
 
 
 //
@@ -27,6 +30,27 @@ _.each( inputKeywords, function( keyword, idx ) {
 });
 
 
+process.stderr.write( "\n" );
+process.stderr.write( "* chom-fetch-stream" + "\n" );
+process.stderr.write( "  * parameters settings:\n" );
+process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
+process.stderr.write( "    * language   : " + JSON.stringify( inputLang ) + "\n" );
+process.stderr.write( "\n" );
+
+
+//
+//
+//
+function onExit() {
+	process.stdout.write( "{}\n" );
+  utils.releaseCredentials();
+  process.exit();
+}
+
+
+//
+//
+//
 function printTweet( datum ) {
 	var message = datum.text.toLowerCase();
 	_.each( inputKeywords, function( keyword ) {
@@ -39,11 +63,49 @@ function printTweet( datum ) {
 	} );	
 }
 
-process.stderr.write("\n");
-process.stderr.write( "* chom-fetch-stream" + "\n");
-process.stderr.write( "  * parameters settings:\n");
-process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
-process.stderr.write( "    * language   : " + JSON.stringify( inputLang ) + "\n" );
-process.stderr.write("\n");
+function startStreaming( keywords, lang, callback ) {
+		dns.resolve( 'www.google.com', function( err ) {
 
-fetchStream.start( inputKeywords, inputLang, printTweet );
+			if ( err ) {
+				streaming = false;
+				process.stderr.write( err );
+				return;
+			}
+			
+			//
+			// If no credentials were passed as input,
+			// then lookup the database
+			//
+			credentials = utils.getCredential();
+
+			//
+			// If no credentials were found, then return
+			//
+			if( _.isEmpty( credentials ) ) {
+				process.stderr.write( "* There are no credentials available\n" );
+				process.stderr.write( "  Please add new credentials using:\n");
+				process.stderr.write( "     chom credentials add\n");
+				process.stdout.write( "{}\n" );
+				return;
+			}
+
+			//
+			// Connecting to twitter
+			//
+			var T = new Twit( credentials );
+
+			//
+			// Starting stream of tweets
+			//
+			var stream = T.stream( "statuses/filter", { track: keywords, language: lang });
+
+			//
+			// Starting stream
+			//
+			stream.on( "tweet", callback );
+			stream.on( "error", function( err ) { stream.stop(); } );
+		} );
+	}
+
+process.on('SIGINT', onExit );
+startStreaming( inputKeywords, inputLang, printTweet );
