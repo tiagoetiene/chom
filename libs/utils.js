@@ -4,6 +4,8 @@ var es 				= require('event-stream');
 var _ = require("underscore");
 var mkdirp = require( "mkdirp" );
 
+var lockedCredentials = [];
+
 process.stdin.setEncoding('utf8');
 
 function getUserHome() {
@@ -17,6 +19,41 @@ function getCHOMDir() {
 function getCredentialsFile() {
 	return getCHOMDir() + "/credentials.json";
 }
+
+function temporaryLockFileName( name ) {
+	return "/tmp/" + name + ".lock"
+}
+
+function lockCredential( name ) {
+	function _lockCredential() {
+		fs.writeFileSync( temporaryLockFileName( name ), "");
+	}
+	_lockCredential();
+	setInterval( _lockCredential, 60000 );
+}
+
+function isLocked( name ) {
+	var filename = temporaryLockFileName( name );
+
+	if ( fs.existsSync( filename ) ) {
+		var stat = fs.statSync( filename );
+		var modified = new Date( stat.mtime );
+		var now = new Date();
+
+		//
+		// If the last time the lock file was updated is more than
+		// 120 seconds ago, then the credential is considered to be unlocked
+		//
+		if( now - modified >= 120000 ) {
+			return false;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
 
 module.exports = {
 	get : function( dict, field ) {
@@ -105,10 +142,25 @@ module.exports = {
 		//
 		var credentialsMap = JSON.parse( fs.readFileSync( credentialsFile ) );
 		var keys = _.keys( credentialsMap );
-		if( keys.length > 0 ) {
-			return credentialsMap[ keys[ _.random( 0, ( keys.length-1 ) ) ] ];
+		for( var i = 0; i < keys.length; ++i ) {
+			var credential = credentialsMap[ keys[ i ] ];
+			if( isLocked( keys[ i ] ) == false ) {
+				lockCredential( keys[ i ] );
+
+				lockedCredentials.push( keys[ i ] );
+				return credential;
+			}
 		}
+
 		return {};
+	},
+	isCredentialLocked: function( name ) {
+		return isLocked( name );
+	},
+	releaseCredentials : function() {
+		_.each( lockedCredentials, function( name ) {
+			fs.unlinkSync( temporaryLockFileName( name ) );
+		} );
 	}
 }
 
