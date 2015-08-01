@@ -2,7 +2,6 @@ var fs = require('fs');
 var JSONStream 	= require('JSONStream');
 var es 				= require('event-stream');
 var _ = require("underscore");
-var mkdirp = require( "mkdirp" );
 
 var lockedCredentials = [];
 
