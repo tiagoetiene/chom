@@ -4,7 +4,6 @@ _ = require("underscore");
 args = require('./extract/args');
 utils = require('./libs/utils');
 
-process.stderr.write( JSON.stringify( program ) + "\n" );
 var inputFields = program.fields;
 var inputNoRetweets = ( _.has( program, "retweets" ) ) ? true : false;
 var inputDelimiter = ( _.isUndefined( program.delimiter ) == false ) ? program.delimiter : "\n";
