@@ -1,0 +1,179 @@
+#!/usr/bin/env node
+
+Error.stackTraceLimit = Infinity;
+
+var _ 					= require("underscore");
+var MongoClient = require('mongodb').MongoClient;
+var ObjectID 		= require('mongodb').ObjectID;
+
+var args  = require('./database/insert/args');
+var utils = require('./libs/utils');
+
+// Input arguments
+var inputMongoURL     = program.mongo_url;
+var inputCollection   = program.collection;
+var inputSaveInterval = program.saveInterval;
+var inputSimulate		  = ( program.simulate ) ? true : false;
+
+process.stderr.write("\n");
+process.stderr.write( "* chom-database-insert" + "\n");
+process.stderr.write( "  * parameters settings:\n");
+process.stderr.write( "    * mongourl     : " + JSON.stringify( inputMongoURL ) + "\n" );
+process.stderr.write( "    * collection   : " + inputCollection + "\n" );
+process.stderr.write( "    * save interval: " + inputSaveInterval + "\n" );
+process.stderr.write( "    * simulate     : " + JSON.stringify( inputSimulate ) + "\n" );
+process.stderr.write("\n");
+
+var database;
+var queue = [];
+var isSaving = false;
+
+MongoClient.connect( inputMongoURL, function( err, db ) {
+
+	if( err )  {
+		process.stdout.write( '* error:' + JSON.stringify( err ) );
+		throw err;
+	}
+	database = db;
+
+	var collection = database.collection( inputCollection );
+
+	setInterval( function() { 
+
+		//
+		// If we are in the process of saving data to the database,
+		// let's to start saving more data and overloaded the
+		// server in the process
+		//
+		if( isSaving == true )
+			return;
+
+		//
+		// Ok, we will start a potentially expensive operation
+		// Setting isSaving to true will lock the network communication
+		// for the current data in queue
+		//
+		isSaving = true;
+
+		//
+		// MongoDB bullk operation. We don't care about the order
+		// in which the data is save.
+		//
+		var bulkOperations = collection.initializeUnorderedBulkOp();
+
+		//
+		// Counting operation. We do not want to call .execute()
+		// if we do not have to
+		//
+		var operationCounter = 0;
+
+		//
+		// For each element in queue, let's schedule
+		// an operation
+		//
+		queue.forEach( function( value, key ) {
+
+			var datum = _.extend( {}, value )
+			
+			if( inputSimulate == false ) {
+				bulkOperations.insert( datum );
+			}
+			else {
+				process.stdout.write( JSON.stringify( datum ) );
+			}
+
+			operationCounter++;
+
+		} );
+
+		queue = [];
+
+		if( operationCounter == 0 ) {
+
+			// 
+			// If no operation was scheduled, let's continue
+			//
+			isSaving = false;
+
+		} else {
+
+			if( inputSimulate == false ) {
+				//
+				// Let's try to save the data, if for some reason it doesn't succeed,
+				// then print the error
+				//
+				try {
+					var timeout = 5000000;
+
+					bulkOperations.execute( { w: 1, wtimeout : timeout }, 
+						function( err, ret ) {
+							if( err ) {
+								process.stderr.write( "* error: " + JSON.stringify( err ) );
+							}
+							
+							isSaving = false;
+						} );
+
+				} catch ( e ) {
+
+					process.stderr.write( "* exception: " + JSON.stringify( e ) );
+					
+					//
+					// If a error accurs, we discard whatever was in the queue 
+					// up until this point, restart bulk operations, and set 
+					// isRunning to false
+					// 
+					isSaving = false;
+				}
+			} else {
+				isSaving = false;
+			}
+		}
+	}, inputSaveInterval );
+});
+
+
+function onExit() {
+
+	var handle = setInterval( function() {
+
+		//
+		// Checking whether we are currently
+		// saving any date. If we are, then
+		// we cannot exit the process just
+		// yet
+		//
+		if( isSaving === true )
+			return;
+
+		//
+		// Ok, everything was saved to the database.
+		// We can now gracefully finish the current
+		// process
+		//
+		process.stderr.write("* chom-save close\n");
+		database.close();
+		clearInterval( handle );
+		process.exit();	
+
+	}, 20);
+}
+
+utils.readJSONFromSTDIN( function( datum ) {
+
+	if( _.isEmpty( datum ) ) {
+
+		onExit();
+
+		return;
+	}
+
+	//
+	// Adding to the list of data to be processed
+	//
+	queue.push( datum );
+	
+
+} );
+
+process.on('SIGINT', onExit );
