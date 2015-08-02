@@ -14,6 +14,7 @@ var utils         = require( './libs/utils' );
 var inputKeywords = program.keywords;
 var inputLang     = program.lang; 
 var inputRetweets = ( program.retweets ) ? true : false;
+var inputURLs     = ( program.url ) ? true : false;
 
 //
 // Removing all keywords that are empty strigns
@@ -36,6 +37,7 @@ process.stderr.write( "  * parameters settings:\n" );
 process.stderr.write( "    * keywords          : " + JSON.stringify( inputKeywords ) + "\n" );
 process.stderr.write( "    * language          : " + JSON.stringify( inputLang ) + "\n" );
 process.stderr.write( "    * include retweets? : " + JSON.stringify( inputRetweets ) + "\n" );
+process.stderr.write( "    * include urls?     : " + JSON.stringify( inputURLs ) + "\n" );
 process.stderr.write( "\n" );
 
 
@@ -56,6 +58,13 @@ function printTweet( datum ) {
 
 	if( inputRetweets == false && _.has( datum, "retweeted_status" ) ) {
 		return;
+	}
+	if( inputURLs == false && _.has( datum, "entities" ) ) {
+		if( _.has( datum.entities, "urls" ) ) {
+			if( datum.entities.urls.length ) {
+				return;
+			}
+		}
 	}
 
 	var message = datum.text.toLowerCase();
