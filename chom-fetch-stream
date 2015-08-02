@@ -13,7 +13,7 @@ var utils         = require( './libs/utils' );
 //
 var inputKeywords = program.keywords;
 var inputLang     = program.lang; 
-var inputRetweets = ( program.retweets ) ? true : false;
+var inputRetweets = ( program.retweet ) ? true : false;
 var inputURLs     = ( program.url ) ? true : false;
 
 //
