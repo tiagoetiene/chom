@@ -6,6 +6,7 @@ program
 	.version( '0.0.1' )
 	.option( '-k, --keywords [list]', 'comma separated list of keywords', utils.parserList, [] )
 	.option( '-l, --lang [language]', 'language to be used (only works for twitter requests)', 'en' )
+	.option( '-n, --no-retweets', 'no retweets' )
 	.parse( process.argv );
 
 if( process.argv.length <= 3 ) {

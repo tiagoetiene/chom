@@ -13,7 +13,7 @@ var utils         = require( './libs/utils' );
 //
 var inputKeywords = program.keywords;
 var inputLang     = program.lang; 
-
+var inputRetweets = ( program.retweets ) ? true : false;
 
 //
 // Removing all keywords that are empty strigns
@@ -33,8 +33,9 @@ _.each( inputKeywords, function( keyword, idx ) {
 process.stderr.write( "\n" );
 process.stderr.write( "* chom-fetch-stream" + "\n" );
 process.stderr.write( "  * parameters settings:\n" );
-process.stderr.write( "    * keywords   : " + JSON.stringify( inputKeywords ) + "\n" );
-process.stderr.write( "    * language   : " + JSON.stringify( inputLang ) + "\n" );
+process.stderr.write( "    * keywords          : " + JSON.stringify( inputKeywords ) + "\n" );
+process.stderr.write( "    * language          : " + JSON.stringify( inputLang ) + "\n" );
+process.stderr.write( "    * include retweets? : " + JSON.stringify( inputRetweets ) + "\n" );
 process.stderr.write( "\n" );
 
 
@@ -52,6 +53,11 @@ function onExit() {
 //
 //
 function printTweet( datum ) {
+
+	if( inputRetweets == false && _.has( datum, "retweeted_status" ) ) {
+		return;
+	}
+
 	var message = datum.text.toLowerCase();
 	_.each( inputKeywords, function( keyword ) {
 		if( message.indexOf( keyword ) != -1 ) {
