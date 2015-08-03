@@ -15,6 +15,7 @@ var inputKeywords = program.keywords;
 var inputLang     = program.lang; 
 var inputRetweets = ( program.retweet ) ? true : false;
 var inputURLs     = ( program.url ) ? true : false;
+var inputGeoOnly  = ( program.geo ) ? true : false;
 
 //
 // Removing all keywords that are empty strigns
@@ -38,6 +39,7 @@ process.stderr.write( "    * keywords          : " + JSON.stringify( inputKeywor
 process.stderr.write( "    * language          : " + JSON.stringify( inputLang ) + "\n" );
 process.stderr.write( "    * include retweets? : " + JSON.stringify( inputRetweets ) + "\n" );
 process.stderr.write( "    * include urls?     : " + JSON.stringify( inputURLs ) + "\n" );
+process.stderr.write( "    * geo only?         : " + JSON.stringify( inputGeoOnly ) + "\n" );
 process.stderr.write( "\n" );
 
 
@@ -64,6 +66,11 @@ function printTweet( datum ) {
 			if( datum.entities.urls.length ) {
 				return;
 			}
+		}
+	}
+	if( inputGeoOnly == true  ) {
+		if( _.isUndefined( datum.coordinates ) || _.isNull( datum.coordinates ) ) {
+			return;
 		}
 	}
 
