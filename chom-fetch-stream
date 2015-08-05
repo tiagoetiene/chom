@@ -16,6 +16,7 @@ var inputLang     = program.lang;
 var inputRetweets = ( program.retweet ) ? true : false;
 var inputURLs     = ( program.url ) ? true : false;
 var inputGeoOnly  = ( program.geo ) ? true : false;
+var inputCity		 	= program.city
 
 //
 // Removing all keywords that are empty strigns
@@ -40,8 +41,32 @@ process.stderr.write( "    * language          : " + JSON.stringify( inputLang )
 process.stderr.write( "    * include retweets? : " + JSON.stringify( inputRetweets ) + "\n" );
 process.stderr.write( "    * include urls?     : " + JSON.stringify( inputURLs ) + "\n" );
 process.stderr.write( "    * geo only?         : " + JSON.stringify( inputGeoOnly ) + "\n" );
+process.stderr.write( "    * track tweets from : " + JSON.stringify( ( inputCity ) ? inputCity : "everywhere" ) );
 process.stderr.write( "\n" );
 
+
+//
+// 
+//
+function getLocations() {
+	var locations = [];
+
+	_.each( inputCity, function( city ) {
+		if( city.indexOf( "San Francisco" ) != -1 || city.indexOf( "SF" ) != -1 ) {
+			_.each( [ -122.75, 36.8, -121.75, 37.8 ], function( c ) {
+				locations.push( c );
+			} );
+		} 
+		else if( city.indexOf( "New York City" ) != -1 || city.indexOf( "NYC" ) != -1 ) {
+			_.each( [ -74,40,-73,41 ], function( c ) {
+				locations.push( c );
+			} );
+		}
+	} );
+
+	// return locations.join();
+	return locations;
+}
 
 //
 //
@@ -74,15 +99,22 @@ function printTweet( datum ) {
 		}
 	}
 
-	var message = datum.text.toLowerCase();
-	_.each( inputKeywords, function( keyword ) {
-		if( message.indexOf( keyword ) != -1 ) {
-			datum.keyword = keyword;
-			datum.created_at = new Date( datum.created_at );
-			var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
-			console.assert( ok == true );
-		}
-	} );	
+	datum.created_at = new Date( datum.created_at );
+
+	if( _.isEmpty( inputKeywords ) == false ) {
+		var message = datum.text.toLowerCase();
+		_.each( inputKeywords, function( keyword ) {
+			if( message.indexOf( keyword ) != -1 ) {
+				datum.keyword = keyword;
+				var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
+				console.assert( ok == true );
+			}
+		} );		
+	} else {
+		var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
+		console.assert( ok == true );
+	}
+
 }
 
 function startStreaming( keywords, lang, callback ) {
@@ -116,10 +148,21 @@ function startStreaming( keywords, lang, callback ) {
 			//
 			var T = new Twit( credentials );
 
+
+			var coords = getLocations();
+			var options = {};
+			// options[ "language" ] = lang;
+			if( _.isEmpty( keywords ) == false ) {
+				options[ "track"    ] = keywords;	
+			}
+			if( _.isEmpty( coords ) == false ) {
+				options[ "locations" ] = coords;
+			}
+
 			//
 			// Starting stream of tweets
 			//
-			var stream = T.stream( "statuses/filter", { track: keywords, language: lang });
+			var stream = T.stream( "statuses/filter", options );
 
 			//
 			// Starting stream
