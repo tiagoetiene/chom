@@ -6,13 +6,14 @@ var _ 					= require("underscore");
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID 		= require('mongodb').ObjectID;
 
-var args  = require('./database/insert/args');
+var args  = require('./database/set/args');
 var utils = require('./libs/utils');
 
 // Input arguments
 var inputMongoURL     = utils.getMongoURL( program.mongo );
 var inputCollection   = program.collection;
 var inputSaveInterval = program.saveInterval;
+var inputKey          = program.key;
 var inputSimulate		  = ( program.simulate ) ? true : false;
 
 process.stderr.write("\n");
@@ -20,11 +21,15 @@ process.stderr.write( "* chom-database-insert" + "\n");
 process.stderr.write( "  * parameters settings:\n");
 process.stderr.write( "    * mongourl     : " + JSON.stringify( inputMongoURL ) + "\n" );
 process.stderr.write( "    * collection   : " + inputCollection + "\n" );
+process.stderr.write( "    * key          : " + inputKey + "\n" );
 process.stderr.write( "    * save interval: " + inputSaveInterval + "\n" );
 process.stderr.write( "    * simulate     : " + JSON.stringify( inputSimulate ) + "\n" );
 process.stderr.write("\n");
 
-var database;
+console.assert( _.isUndefined( inputMongoURL )   == false );
+console.assert( _.isUndefined( inputCollection ) == false );
+console.assert( _.isUndefined( inputKey )        == false );
+
 var queue = [];
 var isSaving = false;
 
@@ -34,9 +39,8 @@ MongoClient.connect( inputMongoURL, function( err, db ) {
 		process.stdout.write( '* error:' + JSON.stringify( err ) );
 		throw err;
 	}
-	database = db;
 
-	var collection = database.collection( inputCollection );
+	var collection = db.collection( inputCollection );
 
 	setInterval( function() { 
 
@@ -76,7 +80,11 @@ MongoClient.connect( inputMongoURL, function( err, db ) {
 			var datum = _.extend( {}, value )
 			
 			if( inputSimulate == false ) {
-				bulkOperations.insert( datum );
+				var val = datum[ inputKey ];
+				var query = {};
+				query[ inputKey ] = val;
+				
+				bulkOperations.find( query ).upsert().update( { $set : datum } );
 			}
 			else {
 				process.stdout.write( JSON.stringify( datum ) );
@@ -151,8 +159,7 @@ function onExit() {
 		// We can now gracefully finish the current
 		// process
 		//
-		process.stderr.write("* chom-database-insert close\n");
-		database.close();
+		process.stderr.write("* chom-database-set close\n");
 		clearInterval( handle );
 		process.exit();	
 

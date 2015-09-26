@@ -25,9 +25,9 @@ utils.readJSONFromSTDIN( function( datum ) {
 		return;
 	}
 
-	if( inputNoRetweets == true && 
-		  _.has( datum, "retweeted_status" ) ) {
-	} else {
+	if( inputNoRetweets == true && _.has( datum, "retweeted_status" ) ) {
+	} 
+	else {
 
 		if( inputCreateObject == false ) {
 			var out = "";
@@ -38,9 +38,13 @@ utils.readJSONFromSTDIN( function( datum ) {
 			process.stdout.write( out + inputDelimiter );	
 		} else {
 			var obj = {};
-			_.each( inputFields, function( field ) {
-				utils.set( obj, field, utils.get( datum, field ) );
-			} );
+			if( inputFields.length ) {
+					_.each( inputFields, function( field ) {
+					utils.set( obj, field, utils.get( datum, field ) );
+				} );	
+			} else {
+				obj = datum;
+			}
 			process.stdout.write( JSON.stringify( obj ) + inputDelimiter );	
 		}
 	}

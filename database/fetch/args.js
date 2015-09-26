@@ -4,25 +4,12 @@ program = require('commander');
 
 program
 	.version( '0.0.1' )
-	.option( '-m, --mongo_url [name]', 'database address' )
+	.option( '-l, --limit [number]', 'it limits the number of results)', parseInt ) 
+	.option( '-m, --mongo [index]', 'index that represents the database (use \'chom database credentials list\' to obtain it)' )
 	.option( '-c, --collection [name]', 'name of the collection to read from' )
 	.option( '-C, --close', 'close database on exit', false )
 	.parse( process.argv );
 
 if( process.argv.length <= 3 ) {
 	program.help();
-}
-
-if( program.config ) {
-	var params = JSON.parse( fs.readFileSync( program.config ) );
-	_.each( params, function( value, key ) {
-		program[ key ] = value;
-	} );
-}
-
-if( program.credentials ) {
-	var params = JSON.parse( fs.readFileSync( program.credentials ) );
-	_.each( params, function( value, key ) {
-		program[ key ] = value;
-	} );	
 }

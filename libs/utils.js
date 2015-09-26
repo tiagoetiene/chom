@@ -160,6 +160,16 @@ module.exports = {
 		_.each( lockedCredentials, function( name ) {
 			fs.unlinkSync( temporaryLockFileName( name ) );
 		} );
+	},
+	getMongoURL: function( name ) {
+		var mongoURLFile = getCHOMDir() + "/mongourl-credentials.json";
+		if ( !fs.existsSync( mongoURLFile ) ) {
+			process.stderr.write( "* Could not file any database.\n" )
+			process.stderr.write( "* User 'chom database credentials add' to add a new database.\n" )
+			return "";
+		}
+		var mongoURLs = JSON.parse( fs.readFileSync( mongoURLFile ) );
+		return mongoURLs[ name ];
 	}
 }
 

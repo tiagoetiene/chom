@@ -4,8 +4,10 @@ program = require('commander');
 
 program
 	.version( '0.0.1' )
+	.command( 'credentials [options]', 'define database credentials' )
 	.command( 'insert [options]', 'insert a new json object to the database' )
 	.command( 'fetch [options]', 'retrieve json objects from a mongodb' )
+	.command( 'set [options]', 'change a mongodb document' )
 	.parse( process.argv );
 
 if( process.argv.length <= 2 ) {
