@@ -167,7 +167,6 @@ function onExit() {
 }
 
 utils.readJSONFromSTDIN( function( datum ) {
-
 	if( _.isEmpty( datum ) ) {
 
 		onExit();
@@ -179,8 +178,6 @@ utils.readJSONFromSTDIN( function( datum ) {
 	// Adding to the list of data to be processed
 	//
 	queue.push( datum );
-	
-
 } );
 
 process.on('SIGINT', onExit );

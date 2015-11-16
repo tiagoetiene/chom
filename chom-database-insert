@@ -167,6 +167,7 @@ utils.readJSONFromSTDIN( function( datum ) {
 
 		return;
 	}
+	delete datum["_id"];
 
 	//
 	// Adding to the list of data to be processed
