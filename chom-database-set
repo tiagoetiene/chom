@@ -15,7 +15,6 @@ var inputCollection   = program.collection;
 var inputSaveInterval = program.saveInterval;
 var inputKey          = program.key;
 var inputSimulate		  = ( program.simulate ) ? true : false;
-var inputPush		      = program.push;
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-database-insert" + "\n");
@@ -25,7 +24,6 @@ process.stderr.write( "    * collection   : " + inputCollection + "\n" );
 process.stderr.write( "    * key          : " + inputKey + "\n" );
 process.stderr.write( "    * save interval: " + inputSaveInterval + "\n" );
 process.stderr.write( "    * simulate     : " + JSON.stringify( inputSimulate ) + "\n" );
-process.stderr.write( "    * push         : " + JSON.stringify( inputPush ) + "\n" );
 process.stderr.write("\n");
 
 console.assert( _.isUndefined( inputMongoURL )   == false );
@@ -174,13 +172,6 @@ utils.readJSONFromSTDIN( function( datum ) {
 		onExit();
 
 		return;
-	}
-
-	if( inputPush ){
-		datum[ "$push" ] = {};
-		datum[ "$push" ][ inputPush ] = datum[ inputPush ];
-
-		delete datum[ inputPush ];
 	}
 
 	//
