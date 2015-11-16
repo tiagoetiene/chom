@@ -151,9 +151,9 @@ function startStreaming( keywords, lang, callback ) {
 
 			var coords = getLocations();
 			var options = {};
-			// options[ "language" ] = lang;
+			options[ "language" ] = lang;
 			if( _.isEmpty( keywords ) == false ) {
-				options[ "track"    ] = keywords;	
+				options[ "track" ] = keywords;
 			}
 			if( _.isEmpty( coords ) == false ) {
 				options[ "locations" ] = coords;
