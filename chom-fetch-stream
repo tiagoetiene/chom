@@ -3,10 +3,8 @@
 var _             = require('underscore');
 var Twit  				= require( 'twit' );
 var dns						= require( 'dns' );
-
 var args 	        = require( './fetch/stream/args' );
 var utils         = require( './libs/utils' );
-
 
 //
 // Input parameters
@@ -32,7 +30,6 @@ _.each( inputKeywords, function( keyword, idx ) {
 	keyword = keyword.toLowerCase();
 });
 
-
 process.stderr.write( "\n" );
 process.stderr.write( "* chom-fetch-stream" + "\n" );
 process.stderr.write( "  * parameters settings:\n" );
@@ -43,7 +40,6 @@ process.stderr.write( "    * include urls?     : " + JSON.stringify( inputURLs )
 process.stderr.write( "    * geo only?         : " + JSON.stringify( inputGeoOnly ) + "\n" );
 process.stderr.write( "    * track tweets from : " + JSON.stringify( ( inputCity ) ? inputCity : "everywhere" ) );
 process.stderr.write( "\n" );
-
 
 //
 // 

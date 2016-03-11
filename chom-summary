@@ -41,7 +41,6 @@ utils.readJSONFromSTDIN( function( tweet ) {
 		return;
 	}
 
-
 	var twitter_handle = tweet.keyword;
 
 	if( _.has( AccountsTree, twitter_handle ) == false ) {
