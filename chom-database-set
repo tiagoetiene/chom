@@ -13,7 +13,7 @@ var utils = require('./libs/utils');
 var inputMongoURL     = utils.getMongoURL( program.mongo );
 var inputCollection   = program.collection;
 var inputSaveInterval = program.saveInterval;
-var inputKey          = program.key;
+var inputKeys         = program.key.split(",");
 var inputSimulate		  = ( program.simulate ) ? true : false;
 
 process.stderr.write("\n");
@@ -21,14 +21,14 @@ process.stderr.write( "* chom-database-insert" + "\n");
 process.stderr.write( "  * parameters settings:\n");
 process.stderr.write( "    * mongourl     : " + JSON.stringify( inputMongoURL ) + "\n" );
 process.stderr.write( "    * collection   : " + inputCollection + "\n" );
-process.stderr.write( "    * key          : " + inputKey + "\n" );
+process.stderr.write( "    * keys         : " + JSON.stringify( inputKeys ) + "\n" );
 process.stderr.write( "    * save interval: " + inputSaveInterval + "\n" );
 process.stderr.write( "    * simulate     : " + JSON.stringify( inputSimulate ) + "\n" );
 process.stderr.write("\n");
 
 console.assert( _.isUndefined( inputMongoURL )   == false );
 console.assert( _.isUndefined( inputCollection ) == false );
-console.assert( _.isUndefined( inputKey )        == false );
+console.assert( _.isUndefined( inputKeys )       == false );
 
 var queue = [];
 var isSaving = false;
@@ -79,15 +79,15 @@ MongoClient.connect( inputMongoURL, function( err, db ) {
 
 			var datum = _.extend( {}, value )
 			
-			if( inputSimulate == false ) {
-				var val = datum[ inputKey ];
-				var query = {};
-				query[ inputKey ] = val;
-				
+			var query = {};
+			_.each(inputKeys, function(key) { query[ key ] = datum[ key ] } )
+
+			if( inputSimulate == false ) {				
 				bulkOperations.find( query ).upsert().update( { $set : datum } );
 			}
 			else {
-				process.stdout.write( JSON.stringify( datum ) );
+				process.stdout.write( "Query: " + JSON.stringify( query ) + "\n" );
+				process.stdout.write( "Data : " + JSON.stringify( datum ) + "\n\n" );
 			}
 
 			operationCounter++;
@@ -172,6 +172,10 @@ utils.readJSONFromSTDIN( function( datum ) {
 		onExit();
 
 		return;
+	}
+
+	if(_.has(datum, "expireAt")){
+		datum.expireAt = new Date(datum.expireAt)
 	}
 
 	//
