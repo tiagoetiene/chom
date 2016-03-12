@@ -69,8 +69,8 @@ function getLocations() {
 //
 function onExit() {
 	process.stdout.write( "{}\n" );
-  utils.releaseCredentials();
-  process.exit();
+	utils.releaseCredentials();
+	process.exit();
 }
 
 
