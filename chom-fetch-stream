@@ -74,6 +74,13 @@ function onExit() {
 }
 
 
+function writeData( datum ) {
+	var ok = process.stdout.write( JSON.stringify( datum ) + "\n" )
+	if(ok == false){
+		process.stderr.write("ooops... buffer is full. Skipping a tweet...\n")
+	}
+}
+
 //
 //
 //
@@ -102,13 +109,11 @@ function printTweet( datum ) {
 		_.each( inputKeywords, function( keyword ) {
 			if( message.indexOf( keyword ) != -1 ) {
 				datum.keyword = keyword;
-				var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
-				console.assert( ok == true );
+				writeData( datum );
 			}
 		} );		
 	} else {
-		var ok = process.stdout.write( JSON.stringify( datum ) + "\n" );
-		console.assert( ok == true );
+		writeData( datum );
 	}
 
 }
