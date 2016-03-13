@@ -13,7 +13,8 @@
     "event-stream" : "3.x.x",
     "sentiment" : "1.x.x",
     "hashmap" : "2.x.x",
-    "mkdirp" : "0.x.x"
+    "mkdirp" : "0.x.x",
+    "chance" : "1.x.x"
   },
   "engine": "node >= 0.10.x"
 }
