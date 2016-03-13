@@ -3,15 +3,10 @@
 var utils = require( "./libs/utils" );
 var args = require( "./summary/args" );
 var TimeTree = require( "./libs/timetree" );
-
 var _ = require( "underscore" );
-
-var totalNumberOfTweets = { mostRecent : 0 };
 var AccountsTree = {};
-
 var inputField = program.field;
 var inputDepth = program.depth;
-
 
 process.stderr.write("\n");
 process.stderr.write( "* chom-summary" + "\n");
@@ -44,71 +39,45 @@ utils.readJSONFromSTDIN( function( tweet ) {
 	var twitter_handle = tweet.keyword;
 
 	if( _.has( AccountsTree, twitter_handle ) == false ) {
+		
+		function valuer( tweet ) {
+			if( _.isNumber( tweet[ inputField ] ) == false )
+				return 0.0 
+		  	return parseFloat( tweet[ inputField ] );
+		}
 
-		AccountsTree[ twitter_handle ] = TimeTree.TimeTree();
-
-		AccountsTree[ twitter_handle ]
-			.depth( inputDepth )
-			.dateValuer( function( d ) {
-				var date = new Date( d.created_at );
-				totalNumberOfTweets.mostRecent = Math.max( totalNumberOfTweets.mostRecent, date );
-				return date; 
-			} )
-			.valuer( function( d ) { 
-				if( isNaN( d[ inputField ] ) || d[ inputField ] === null ) {
-			  		return 0;
-			  	}
-			  	return parseFloat( d[ inputField ] ); 
-			}).build();
-
-			totalNumberOfTweets[ twitter_handle ] = 0;
+		AccountsTree[ twitter_handle ] = TimeTree.TimeTree( inputDepth, valuer )
 	}
-
-	totalNumberOfTweets[ twitter_handle ] += 1;
 	AccountsTree[ twitter_handle ].add( tweet );
 
 } );
 
-setInterval( function() {
-	summarize();
-}, 10000 );
+setInterval( summarize, 10000 );
 
 function summarize( ) {
-
 	_.each( AccountsTree, function( timetree, twitter_handle ) {
-
-		for(var idx = 0; idx < timetree.depth(); ++idx) {
+		for(var depth = 0; depth < inputDepth; ++depth) {
 
 			var data = [];
-			var interval = timetree.interval( idx );
-
-			_.each( timetree.get( idx ), function( d ) {
-
-				var datum = { 
-					date : d.date, 
-					counter : d.counter, 
-					updated : d.updated,
-				};
-				datum[ inputField ] = d.field;
+			_.each( timetree.values( depth ), function( d ) {
+				var datum = {}
+				datum.date = d.bin
+				datum.counter = d.count
+				datum.updated = d.updated
+				datum[ inputField ] = d.value
 				data.push( datum );
-
 			});
-
-			data = _.sortBy( data, 'date');
-
-			if(data.length === 0)
-				continue;
 
 			_.each( data, function( datum ) {
 
 				if( datum.updated === true ) {
 
-					timetree.updated( idx,  +datum.date, false );
+					timetree.updated( depth, datum.date );
 
 					var out = { 
 						twitter_handle : twitter_handle, 
-						depth : idx, 
-						date : +datum.date, 
+						depth : depth, 
+						date : datum.date, 
 						counter : datum.counter, 
 					}
 					out[ inputField ] = datum[ inputField ];
@@ -119,5 +88,3 @@ function summarize( ) {
 		}
 	} );
 }
-
-utils.printToFile( "/tmp/chom.summary.txt", totalNumberOfTweets );
