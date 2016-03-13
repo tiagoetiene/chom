@@ -12,7 +12,6 @@
     "JSONStream" : "0.x.x",
     "event-stream" : "3.x.x",
     "sentiment" : "1.x.x",
-    "jsclass" : "4.x.x",
     "hashmap" : "2.x.x",
     "mkdirp" : "0.x.x"
   },
