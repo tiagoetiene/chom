@@ -7,7 +7,7 @@
     "underscore": "1.x.x",
     "mongodb" : "2.x.x",
     "commander" : "2.x.x",
-    "twit" : "1.x.x",
+    "twit" : "2.x.x",
     "moment" : "2.x.x",
     "JSONStream" : "0.x.x",
     "event-stream" : "3.x.x",
