@@ -169,6 +169,10 @@ utils.readJSONFromSTDIN( function( datum ) {
 	}
 	delete datum["_id"];
 
+	if(_.has(datum, "expireAt")){
+		datum.expireAt = new Date( datum.expireAt )
+	}
+
 	//
 	// Adding to the list of data to be processed
 	//

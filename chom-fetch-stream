@@ -75,10 +75,7 @@ function onExit() {
 
 
 function writeData( datum ) {
-	var ok = process.stdout.write( JSON.stringify( datum ) + "\n" )
-	if(ok == false){
-		process.stderr.write("ooops... buffer is full. Skipping a tweet...\n")
-	}
+	process.stdout.write( JSON.stringify( datum ) + "\n" )
 }
 
 //
