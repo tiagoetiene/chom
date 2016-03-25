@@ -144,7 +144,8 @@ function startStreaming( keywords, lang, callback ) {
 			//
 			// Connecting to twitter
 			//
-			var T = new Twit( credentials );
+      credentials.timeout_ms = 30000
+      var T = new Twit( credentials );
 
 
 			var coords = getLocations();
@@ -165,8 +166,19 @@ function startStreaming( keywords, lang, callback ) {
 			//
 			// Starting stream
 			//
-			stream.on( "tweet", callback );
-			stream.on( "error", function( err ) { stream.stop(); } );
+      stream.on( "tweet", callback );
+      stream.on( "error", function( arg ) {  
+        process.stderr.write( "chom.fetch.stream.error\n" )
+        stream.stop(); 
+        setTimeout( function() {  
+          process.stderr.write( "chom.fetch.stream.start\n" )
+          stream.start() 
+        }, 30000 );
+      } )
+      stream.on( "disconnect", function( arg ) { process.stderr.write( "chom.fetch.stream.disconnect\n" ) } )
+      stream.on( "connect", function( arg ) { process.stderr.write( "chom.fetch.stream.connect\n" ) } )
+      stream.on( "connected", function( arg ) { } )
+      stream.on( "warning", function( arg ) { process.stderr.write( "chom.fetch.stream.warning\n" ) } )
 		} );
 	}
 
