@@ -4,17 +4,17 @@
   "author": "Tiago Etiene <tiago.etiene@gmail.com>",
   "repository": "https://github.com/tiagoetiene/chom",
   "dependencies": {
-    "underscore": "1.x.x",
-    "mongodb" : "2.x.x",
-    "commander" : "2.x.x",
-    "twit" : "2.x.x",
-    "moment" : "2.x.x",
-    "JSONStream" : "0.x.x",
-    "event-stream" : "3.x.x",
-    "sentiment" : "1.x.x",
-    "hashmap" : "2.x.x",
-    "mkdirp" : "0.x.x",
-    "chance" : "1.x.x"
+    "JSONStream": "0.x.x",
+    "chance": "1.x.x",
+    "commander": "2.x.x",
+    "event-stream": "3.x.x",
+    "hashmap": "2.x.x",
+    "mkdirp": "0.x.x",
+    "moment": "2.x.x",
+    "mongodb": "2.x.x",
+    "sentiment": "1.x.x",
+    "twit": "2.x.x",
+    "underscore": "1.x.x"
   },
   "engine": "node >= 0.10.x"
 }
