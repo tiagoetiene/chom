@@ -10,7 +10,7 @@
     "event-stream": "3.x.x",
     "hashmap": "2.x.x",
     "mkdirp": "0.x.x",
-    "moment": "2.x.x",
+    "moment": ">=2.19.3",
     "mongodb": "3.x.x",
     "sentiment": "1.x.x",
     "twit": "2.x.x",
