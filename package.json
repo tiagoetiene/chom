@@ -11,7 +11,7 @@
     "hashmap": "2.x.x",
     "mkdirp": "0.x.x",
     "moment": "2.x.x",
-    "mongodb": "2.x.x",
+    "mongodb": "3.x.x",
     "sentiment": "1.x.x",
     "twit": "2.x.x",
     "underscore": "1.x.x"
